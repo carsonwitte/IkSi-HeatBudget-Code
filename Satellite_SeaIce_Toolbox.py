@@ -364,3 +364,69 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
     axx[2,1].set_title('May 10, 2019',fontsize=fontsz)
     axx[2,2].set_title('May 16, 2019',fontsize=fontsz)
     axx[2,3].set_title('May 25, 2019',fontsize=fontsz)
+
+#########################################################################################################
+
+def plot_measurement_stations(image_path, image_2path, coastline_path, river_path, figsz, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD, sis_color, obt_color, fontsz):
+    '''
+    Function to plot simple map of the locations and deployment durations of the OBT and SIS
+    '''
+    gdal.UseExceptions()
+
+    coastline = ShapelyFeature(Reader(coastline_path).geometries(),ccrs.PlateCarree())
+    river = ShapelyFeature(Reader(river_path).geometries(),ccrs.PlateCarree())
+
+    #open tiff file and extract data, geotransform, and crs
+    ds = gdal.Open(image_path)
+    data = ds.ReadAsArray()
+    gt = ds.GetGeoTransform()
+    proj = ds.GetProjection()
+
+    inproj = osr.SpatialReference()
+    inproj.ImportFromWkt(proj)
+    projcs = inproj.GetAuthorityCode('PROJCS')
+    projection = ccrs.epsg(projcs)
+    subplot_kw = dict(projection=projection)
+
+    #initialize figure
+    fig, axx = plt.subplots(figsize=figsz, subplot_kw=subplot_kw)
+
+    extent = (gt[0], gt[0] + ds.RasterXSize * gt[1],
+                  gt[3] + ds.RasterYSize * gt[5], gt[3])
+
+    img = axx.imshow(data[:3, :, :].transpose((1, 2, 0)), extent=extent,
+                    origin='upper')
+
+    axx.set_extent([lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD])
+
+    plot_MODIS_geotiff(axx,image_2path, coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD)
+
+    #add coastlines and features
+    axx.add_feature(coastline,zorder=300, edgecolor='k', facecolor='#efebd3', alpha=1)
+    axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='none', alpha=1,linewidth=4)
+
+    #add title to map
+    axx.text(0.5, 0.99, 'Measurement Stations \n in Kotzebue Sound', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    #add data source to map
+    axx.text(0.006, 0.01, ' Satellite Image From \n MODIS Visible, \n May 7 2019', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+
+
+    #add circles
+    axx.add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=0.1, height=0.04, edgecolor=sis_color, linewidth=6, transform=ccrs.PlateCarree(), facecolor='none',zorder=400));
+    axx.add_patch(patches.Ellipse(xy=(-163.7957,67.0598), width=0.1, height=0.04, edgecolor=obt_color, linewidth=6, transform=ccrs.PlateCarree(), facecolor='none',zorder=400));
+
+    axx.text(0.57, 0.53, 'AIOS', fontsize=fontsz, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=sis_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+    axx.text(0.57, 0.47, 'Jan 2019 - Apr 2019', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=sis_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+    axx.text(0.57, 0.41, '66.8968 N, 162.6139 W', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=sis_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+
+    axx.text(0.3, 0.66, 'OBT', fontsize=fontsz, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=obt_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+    axx.text(0.3, 0.6, 'Sep 2017 - Jun 2019', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=obt_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+    axx.text(0.3, 0.54, '67.0598 N, 163.7957 W', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.3', facecolor=obt_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
