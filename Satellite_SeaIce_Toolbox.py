@@ -66,7 +66,15 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
 
     color2019='#bc112b'
     seacolor='#121b86'
+    colorstring = 'w'
     fontsz=24
+
+    #Underlying rectangle  for custom legend. Blue with transparent boxes stacked on top. Need 20 boxes to account for 19 years + the zero value.
+    x = 0.87
+    y = 0.55
+    w = 0.025
+    h = 0.25
+    nyears = 20
 
     #create map figure
     fig,axx = plt.subplots(figsize=(16,16),
@@ -84,11 +92,37 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
         #plot sea ice onto map
         axx.contourf(monthIce.longitude,monthIce.latitude,monthIce.sea_ice_area_fraction,levels=[thresh,100],transform=ccrs.PlateCarree(),colors=colorstring,alpha=transparency,vmin=cmin,vmax=cmax,linestyles='solid')
 
-        #add in coastlines and save figures each iteration if plotflag
+        #add in formatting and save figures each iteration if plotflag
         if plotflag == 1:
             axx.add_feature(cfeature.NaturalEarthFeature('physical', 'land', '50m', edgecolor='face', facecolor='#efebd3'),zorder=100)
             axx.coastlines(resolution='50m',zorder=200)
             axx.set_extent([xmin,xmax,ymin,ymax])
+            #Add title to map
+            axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+
+            #Add data source to map
+            axx.text(0.01, 0.01, 'Data from AMSR-2 Satellite Processed with ASI Algorithm by U.Bremen', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+
+            #Add custom legend to map
+            #plot legend boxes
+            axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=300))
+            for idx in np.arange(1,nyears):
+                counter = 0
+                while counter < idx:
+                    axx.add_patch(patches.Rectangle(xy=(x,y+(idx*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=colorstring, alpha=0.15, transform=axx.transAxes, zorder=300))
+                    counter = counter + 1
+            #label legend
+            axx.text(x, y + h, '% of Prior Years  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=300)
+            axx.text(x + w, y + h, ' 100%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='top', transform=axx.transAxes,zorder=300)
+            axx.text(x + w, y + h/2, ' 50%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,zorder=300)
+            axx.text(x + w, y - (h/nyears/2), ' 0%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,zorder=300)
+
+            #label Kotzebue Sound
+            axx.text(0.65, 0.54, 'Kotzebue \n Sound', fontsize=18, transform=axx.transAxes, zorder=300)
+            axx.add_patch(patches.Arrow(x=0.69, y=0.58, dx=0.01, dy=0.05, width=0.01, facecolor='k',transform=axx.transAxes,zorder=300))
+
             plt.savefig(f'Figures/Layered Sea Ice Maps/AprSeaIceExtent_to_{label}.png',dpi=300,facecolor='k')
 
     #plot 2019 on top in red
@@ -109,13 +143,6 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
              bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add custom legend to map
-    #Underlying rectangle of blue with transparent boxes stacked on top. Need 20 boxes to account for 19 years + the zero value.
-    x = 0.87
-    y = 0.55
-    w = 0.025
-    h = 0.25
-    nyears = 20
-
     #plot legend boxes
     axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=300))
     for idx in np.arange(1,nyears):
@@ -221,7 +248,7 @@ def plot_monthly_anomalies(si, sst):
 
 #########################################################################################################
 
-def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, transparency, xmin, xmax, ymin, ymax):
+def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, transparency, xmin, xmax, ymin, ymax, plotflag):
     '''
     This function imports shapefiles of landfast ice extent and plots them in a transparent stack with 2019 in red, along with coastline and river shapefiles and some labels and legends.
 
@@ -232,6 +259,13 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     seacolor='#121b86'
     colorstring='#ffffff'
     color2019='#bc112b'
+
+    #Underlying rectangle for legend of blue with transparent boxes stacked on top. Need 20 boxes to account for 19 years + the zero value.
+    x = 0.89
+    y = 0.54
+    w = 0.025
+    h = 0.35
+    nyears = 20
 
     #read in shapefiles
     coastline = ShapelyFeature(Reader(coastline_path).geometries(),ccrs.PlateCarree())
@@ -252,8 +286,47 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     #set map extent
     axx.set_extent([xmin,xmax,ymin,ymax])
     #stack layers of transparent ice shapes
+    yr = 2000
     for shape in shape_list:
         axx.add_feature(shape)
+        #if we want to save a plot of every year...
+        if plotflag == 1:
+            #add coastline shapefile
+            axx.add_feature(coastline,zorder=300, edgecolor='k', facecolor='#efebd3', alpha=1)
+            #add rivers shapefile
+            axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
+            #Add title to map
+            axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #Add data source to map
+            axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #Add custom legend to map
+            #plot legend boxes
+            axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=400))
+            for idx in np.arange(1,nyears):
+                counter = 0
+                while counter < idx:
+                    axx.add_patch(patches.Rectangle(xy=(x,y+(idx*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=colorstring, alpha=0.15, transform=axx.transAxes, zorder=400))
+                    counter = counter + 1
+            #label legend
+            axx.text(x, y + h, '% of Prior Years  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=400)
+            axx.text(x + w, y + h, ' 100%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='top', transform=axx.transAxes,zorder=400)
+            axx.text(x + w, y + h/2, ' 50%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,zorder=400)
+            axx.text(x + w, y - (h/nyears/2), ' 0%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,zorder=400)
+            #add 2019 to legend
+            #axx.add_patch(patches.Rectangle(xy=(x,y+h+(2*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=color2019, alpha=1, transform=axx.transAxes, zorder=400))
+            #axx.text(x, y + h +(2.4*h/nyears), '2019  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,zorder=400)
+            #label features on plot
+            axx.text(0.7, 0.475, 'Kobuk \n River', fontsize=18, transform=axx.transAxes, zorder=400)
+            axx.text(0.46, 0.75, 'Noatak \n River', fontsize=18, transform=axx.transAxes, zorder=400)
+            axx.text(0.538, 0.545, 'Kotzebue', fontsize=13, transform=axx.transAxes, zorder=400)
+            axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.018, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
+
+            plt.savefig(f'Figures/Layered Landfast Ice Maps/LandfastIce_to_{yr}.png',dpi=300,facecolor='k')
+
+        yr = yr + 1
+
     #add 2019 in red
     axx.add_feature(lfi2019_feature)
     #add coastline shapefile
@@ -267,12 +340,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
              bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add custom legend to map
-    #Underlying rectangle of blue with transparent boxes stacked on top. Need 20 boxes to account for 19 years + the zero value.
-    x = 0.89
-    y = 0.54
-    w = 0.025
-    h = 0.35
-    nyears = 20
+
     #plot legend boxes
     axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=400))
     for idx in np.arange(1,nyears):
@@ -430,3 +498,53 @@ def plot_measurement_stations(image_path, image_2path, coastline_path, river_pat
              bbox=dict(boxstyle='square,pad=0.3', facecolor=obt_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
     axx.text(0.3, 0.54, '67.0598 N, 163.7957 W', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,
              bbox=dict(boxstyle='square,pad=0.3', facecolor=obt_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
+
+#########################################################################################################
+
+def plot_may2019_image(image_path, image_2path, coastline_path, river_path, figsz, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD, sis_color, obt_color, fontsz):
+    '''
+    Function to plot simple map of the locations and deployment durations of the OBT and SIS
+    '''
+    gdal.UseExceptions()
+
+    coastline = ShapelyFeature(Reader(coastline_path).geometries(),ccrs.PlateCarree())
+    river = ShapelyFeature(Reader(river_path).geometries(),ccrs.PlateCarree())
+
+    #open tiff file and extract data, geotransform, and crs
+    ds = gdal.Open(image_path)
+    data = ds.ReadAsArray()
+    gt = ds.GetGeoTransform()
+    proj = ds.GetProjection()
+
+    inproj = osr.SpatialReference()
+    inproj.ImportFromWkt(proj)
+    projcs = inproj.GetAuthorityCode('PROJCS')
+    projection = ccrs.epsg(projcs)
+    subplot_kw = dict(projection=projection)
+
+    #initialize figure
+    fig, axx = plt.subplots(figsize=figsz, subplot_kw=subplot_kw)
+
+    extent = (gt[0], gt[0] + ds.RasterXSize * gt[1],
+                  gt[3] + ds.RasterYSize * gt[5], gt[3])
+
+    img = axx.imshow(data[:3, :, :].transpose((1, 2, 0)), extent=extent,
+                    origin='upper')
+
+    axx.set_extent([lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD])
+
+    plot_MODIS_geotiff(axx,image_2path, coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD)
+
+    #add coastlines and features
+    axx.add_feature(coastline,zorder=300, edgecolor='k', facecolor='#efebd3', alpha=1)
+    axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='none', alpha=1,linewidth=4)
+
+    #add data source to map
+    axx.text(0.006, 0.01, ' Satellite Image From \n MODIS Visible, \n May 7 2019', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+
+    #label features on plot
+    axx.text(0.7, 0.475, 'Kobuk \n River', fontsize=18, transform=axx.transAxes, zorder=400)
+    axx.text(0.46, 0.75, 'Noatak \n River', fontsize=18, transform=axx.transAxes, zorder=400)
+    axx.text(0.538, 0.545, 'Kotzebue', fontsize=13, transform=axx.transAxes, zorder=400)
+    axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.018, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));

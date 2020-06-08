@@ -298,7 +298,7 @@ def plot_thermodynamic_forcing(deltaT, ustar, start, end):
 
     #-------Delta-T & u*0------
     deltaT_daily = deltaT.rolling(4*24,center=True,min_periods=24*2).mean()
-    axx.fill_between(deltaT_daily.index,deltaT_daily,color='maroon')
+    axx.fill_between(deltaT_daily.index,deltaT_daily,color='maroon',alpha=1)
     axx.set_ylabel('$\Delta T$  $(^\circ C)$',color='maroon',fontsize=30)
     axx.set_title('Thermodynamic Forcing',fontsize=30)
     axx.set_ylim([0,0.25])
@@ -307,7 +307,7 @@ def plot_thermodynamic_forcing(deltaT, ustar, start, end):
     #ustar_err = ustar.rolling(time=4*24,center=True,min_periods=2).std()
     par0 = axx.twinx()
     #par0.fill_between(ustar_daily.time.values,y1=ustar_daily-ustar_err,y2=ustar_daily+ustar_err,color='lightgrey',alpha=0.6)
-    par0.plot(ustar_daily.time.values,ustar_daily,'goldenrod',linewidth=linewd*2)
+    par0.plot(ustar_daily.time.values,ustar_daily,'goldenrod',linewidth=linewd*2,alpha=0.5)
     par0.set_ylabel('$u_{*0}$  $(m/s)$',color='goldenrod',fontsize=30)
     par0.set_ylim([0,0.1])
 
@@ -405,7 +405,7 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     axx[0].xaxis.set_major_formatter(myFmt);
     axx[0].set_title('Fluxes at the Snow-Air Interface')
 
-    axx[0].legend(['$F_{LW_{net}}$','$F_{SW_{net}}$','$F_{sensible}$','$F_{total}$'],bbox_to_anchor=(1.001,0.83),fontsize=lgndfont)
+    l1 = axx[0].legend(['$F_{LW_{net}}$','$F_{SW_{net}}$','$F_{sensible}$','$F_{total}$'],bbox_to_anchor=(1.001,0.83),fontsize=lgndfont)
 
 
     axx[1].plot(scale*Fw_plot, linewidth=linewd*2)
@@ -413,12 +413,14 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     axx[1].plot(resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1)
     axx[1].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
     axx[1].set_ylim([-100,100])
-    axx[1].legend(['$F_{water}$','$F_{conductive}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
+    l2 = axx[1].legend(['$F_{water}$','$F_{conductive}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
     axx[1].set_title('Fluxes at the Ice-Water Interface')
     axx[1].set_ylabel('$W/m^2$')
 
     axx[1].xaxis.set_major_locator(ticker.MultipleLocator(8))
     axx[1].xaxis.set_major_formatter(myFmt);
+
+    plt.savefig('Figures/Flux Balances v1.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
 
 #########################################################################################################
 
@@ -519,6 +521,66 @@ def plot_sal_v_deltaT(rbr, start_sub1, end_sub1, start_sub2, end_sub2):
 
     cax21 = plt.subplot2grid((50,6),(46,0),rowspan=3,colspan=4)
     plt.colorbar(h2, orientation='horizontal',cax=cax21,ticks=[])
+
+    fig.suptitle('Relationship Between Salinity & Departure From Freezing Point',y=0.94)
+
+#########################################################################################################
+
+def plot_sal_v_deltaT_single(rbr, start_sub1, end_sub1):
+    '''
+    This function plots a timeseries and modified T-S diagram of Salinity vs. Departure from Freezing Point, for 2 different subsections of the timeseries as defined by the input parameters.
+    '''
+
+    fig = plt.figure(figsize=(12,7), facecolor='w')
+    plt.rcParams['font.size'] = 16
+
+    salticks = [0,10,20,30]
+
+    #------Section 1 Timeseries-----
+    ax1 = plt.subplot2grid((64,6),(0,0),rowspan=27,colspan=4)
+    ax1.plot(rbr.Salinity_Adjusted.loc[start_sub1:end_sub1],'k')
+    ax1.set_ylabel('Salinity (psu)',color='k')
+    ax1.tick_params(axis='y', colors='k')
+    ax1.set_ylim([0,30])
+    ax1.set_yticks(salticks)
+    ax1.set_xlim(start_sub1,end_sub1)
+    ax1.set_title('')
+    ax1.patch.set_alpha(0.1)
+    ax1.set_zorder(2)
+    #ax1.set_xlabel('Time')
+
+    par1 = ax1.twinx()
+    par1.fill_between(rbr.deltaT_Adjusted.loc[start_sub1:end_sub1].index,rbr.deltaT_Adjusted.loc[start_sub1:end_sub1],color='maroon',alpha=0.4)
+    par1.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    par1.set_yticklabels([])
+    par1.tick_params(axis='y', colors='darkred')
+    par1.set_ylim([0,0.5])
+    par1.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    par1.set_zorder(1)
+
+    myFmt = mdates.DateFormatter('%b %d')
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(3))
+    ax1.xaxis.set_minor_locator(ticker.MultipleLocator(1))
+    ax1.xaxis.set_major_formatter(myFmt);
+
+
+    #------Section 1 "TS" Diagram-----
+    ax11 = plt.subplot2grid((64,24),(0,17),rowspan=27,colspan=6)
+    h1 = ax11.scatter(rbr.Salinity_Adjusted.loc[start_sub1:end_sub1],rbr.deltaT_Adjusted.loc[start_sub1:end_sub1],s=1,c=rbr.loc[start_sub1:end_sub1].index,cmap=cc.cm.rainbow)
+    ax11.set_ylim([0,0.5])
+    ax11.set_xlim([0,21])
+    ax11.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    ax11.set_yticklabels(['0.0','0.1','','','0.4','0.5']);
+    ax11.tick_params(axis='y', colors='darkred')
+    ax11.tick_params(axis='x', colors='k')
+    ax11.set_xticks(salticks)
+    ax11.grid(alpha=0.2)
+
+
+    cax11 = plt.subplot2grid((50,6),(21,0),rowspan=3,colspan=4)
+    plt.colorbar(h1, orientation='horizontal',cax=cax11,ticks=[])
+
+    #---------------------------------------------------------------------------------
 
     fig.suptitle('Relationship Between Salinity & Departure From Freezing Point',y=0.94)
 
