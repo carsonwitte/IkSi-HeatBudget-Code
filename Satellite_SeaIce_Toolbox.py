@@ -485,7 +485,7 @@ def plot_measurement_stations(image_path, image_2path, coastline_path, river_pat
     axx.add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=0.1, height=0.04, edgecolor=sis_color, linewidth=6, transform=ccrs.PlateCarree(), facecolor='none',zorder=400));
     axx.add_patch(patches.Ellipse(xy=(-163.7957,67.0598), width=0.1, height=0.04, edgecolor=obt_color, linewidth=6, transform=ccrs.PlateCarree(), facecolor='none',zorder=400));
 
-    axx.text(0.57, 0.53, 'AIOS', fontsize=fontsz, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
+    axx.text(0.57, 0.53, 'ITO', fontsize=fontsz, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
              bbox=dict(boxstyle='square,pad=0.3', facecolor=sis_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)
     axx.text(0.57, 0.47, 'Jan 2019 - Apr 2019', fontsize=fontsz-2, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,
              bbox=dict(boxstyle='square,pad=0.3', facecolor=sis_color, edgecolor='k', linewidth=3,alpha=1),zorder=400)

@@ -8,6 +8,7 @@ import xarray as xr
 import dask.array as da
 from dask.diagnostics import ProgressBar
 from scipy import interpolate
+from scipy import signal
 import cartopy
 import cartopy.crs as ccrs
 import cartopy.feature as cfeature
@@ -19,6 +20,7 @@ from matplotlib import cm
 import matplotlib.patches as patches
 import matplotlib.ticker as ticker
 import matplotlib.dates as mdates
+from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 import colorcet as cc
 import windrose
 import gsw
@@ -30,18 +32,18 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     #---Plot------------------
     plt.rcParams.update({'font.size': 16})
     fig,axx = plt.subplots(nrows=10,ncols=1,figsize=(20,28),sharex=True, facecolor='w')
-    fig.suptitle('Sea Ice Station Data',fontsize=30,y=0.91)
+    fig.suptitle('Ice-Tethered Observatory Data',fontsize=30,y=0.91)
 
     labelfontsz=20
     ylims=[-0.5, 12]
-    h1 = axx[0].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr')
+    h1 = axx[0].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr_r')
     axx[0].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
     axx[0].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
     axx[0].set_xlim([start, end])
     axx[0].set_ylim([-0.5,6])
     axx[0].invert_yaxis()
     axx[0].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[0].set_title('Current Speed & Direction [Red=Northwards, Blue=Southwards] (Aquadopp)')
+    axx[0].set_title('Current Speed & Direction [Blue=Northwards, Red=Southwards] (Aquadopp)')
     fig.subplots_adjust(right=0.9)
     cbar_ax1 = fig.add_axes([0.91, 0.819, 0.02, 0.06])
     cbar1 = fig.colorbar(h1, cax=cbar_ax1)
@@ -106,9 +108,9 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     axx[7].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz})
     axx[7].set_title('Down-welling Radiation (MaxiMet & FWS Kipp&Zonen)')
 
-    axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
-    axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
-    axx[8].legend()
+    hnSW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
+    hnLW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
+    axx[8].legend(['Net SW','Net LW'])
     axx[8].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz});
     axx[8].set_title('Net Radiation (CNR2)')
     axx[8].set_yticks([-100,0,100,200])
@@ -307,7 +309,7 @@ def plot_thermodynamic_forcing(deltaT, ustar, start, end):
     #ustar_err = ustar.rolling(time=4*24,center=True,min_periods=2).std()
     par0 = axx.twinx()
     #par0.fill_between(ustar_daily.time.values,y1=ustar_daily-ustar_err,y2=ustar_daily+ustar_err,color='lightgrey',alpha=0.6)
-    par0.plot(ustar_daily.time.values,ustar_daily,'goldenrod',linewidth=linewd*2,alpha=0.5)
+    par0.plot(ustar_daily.time.values,ustar_daily,'goldenrod',linewidth=linewd*2,alpha=1)
     par0.set_ylabel('$u_{*0}$  $(m/s)$',color='goldenrod',fontsize=30)
     par0.set_ylim([0,0.1])
 
@@ -793,3 +795,352 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     h2 = ax1.plot(si,t_freeze,'k',linewidth=1)
     ax1.legend(['Fall (Oct-Dec)','Spring (Apr-Jun)','Freezing Point'],loc='upper left',framealpha=1);
     ax1.set_title('Fall vs. Spring in T-S Space')
+
+####################################################################################################
+
+def butter_highpass(cutoff, fs, order=5):
+    nyq = 0.5 * fs
+    normal_cutoff = cutoff / nyq
+    b, a = signal.butter(order, normal_cutoff, btype='highpass', analog=False)
+    return b, a
+
+def butter_highpass_filter(data, cutoff, fs, order=5):
+    b, a = butter_highpass(cutoff, fs, order=order)
+    y = signal.filtfilt(b, a, data)
+    return y
+
+def plot_filtered_sal_v_deltaT(rbr, start, end):
+    '''
+    '''
+
+    dT = rbr.deltaT_Adjusted
+    sal = rbr.Salinity_Adjusted
+
+    #do sensitivity analysis first so it doesn't interfere with plotting
+    max_corrs = []
+    max_days = np.arange(1,10)
+
+    period = 10                 #sampling period of salinity timeseries is 10min
+    fs = 1/(period*60)          #convert from period minutes to Hz (1/s)
+    dT_demean = dT - dT.mean()
+
+    for days in max_days:
+        max_period = days*24*60     #how many minutes to make the cutoff frequency (days*hours*minutes)
+        cutoff = 1/(max_period*60)  #cutoff frequency in Hz
+
+        filtered_Sal = butter_highpass_filter(sal, cutoff, fs, order=1)
+
+        sal_demean = filtered_Sal - filtered_Sal.mean()
+
+        [lags, corrs, h, b] = plt.xcorr(sal_demean, dT_demean, maxlags=1,usevlines=False,normed=True);
+        max_corrs.append(np.max(corrs))
+        plt.close()
+
+
+    #initialize final filtering parameters
+    period = 10                 #sampling period of salinity timeseries is 10min
+    fs = 1/(period*60)          #convert from period minutes to Hz (1/s)
+    max_period = 3*24*60        #how many minutes to make the cutoff frequency (days*hours*minutes)
+    cutoff = 1/(max_period*60)  #cutoff frequency in Hz
+
+    filtered_Sal = butter_highpass_filter(sal, cutoff, fs, order=1)
+
+
+    fig = plt.figure(figsize=(24,16), facecolor='w')
+
+    #---------ROW 1------------------------------------
+    #--------plot dT vs. filtered Salinity--------------
+    ax1 = plt.subplot2grid(shape=(2,4),loc=(0,0),rowspan=1,colspan=4)
+    ax1.plot(sal.index, filtered_Sal,'k')
+    ax1.set_ylabel('High-Pass Filtered Salinity')
+    ax1.patch.set_alpha(0.1)
+    ax1.set_zorder(2)
+    ax1.set_title('High-Frequency Salinity Variations Are Related to Departures from Freezing Point',pad=20)
+    ax1.set_ylim([-5,15])
+    ax1.set_yticks([-5,0,5,10,15])
+
+    par1 = ax1.twinx()
+    par1.fill_between(rbr.index,rbr.deltaT_Adjusted,color='maroon',alpha=0.4)
+    par1.tick_params(axis='y', colors='darkred')
+    par1.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    par1.set_zorder(1)
+    par1.spines['right'].set_color('darkred')
+    ax1.spines['right'].set_color('darkred')
+
+    par1.set_ylim([0,0.5])
+
+    ax1.set_xlim([start, end])
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(8))
+    myFmt = mdates.DateFormatter('%b %d')
+    ax1.xaxis.set_major_formatter(myFmt);
+
+
+    #-----------plot inset of filter being applied-----------------
+    inset_fontsz=12
+    period_ticks = np.array([50,10,3,1,0.1]) #days
+    period_secs = period_ticks*24*3600 #seconds
+    freq_ticks = 1/period_secs
+    #axins1 = inset_axes(ax1, width="15%", height="30%", loc='upper center', borderpad=1)
+    axins1 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.36,0.63,0.15,0.3), bbox_transform=ax1.transAxes)
+    b, a = butter_highpass(cutoff, fs, order=1)
+    w, h = signal.freqz(b, a, worN=4096)
+    axins1.axvline(x=cutoff,color='k',linewidth=3,ls='--')
+    axins1.semilogx((fs * 0.5 / np.pi) * w, abs(h))
+    axins1.set_title('High-Pass Filter Applied to Salinity',fontdict={'size':inset_fontsz},pad=10)
+    axins1.set_xlabel('Period (days)',fontdict={'size':inset_fontsz})
+    axins1.set_xticks(freq_ticks)
+    axins1.set_xticklabels(['50','10','3','1','0.1'],fontdict={'size':inset_fontsz})
+    axins1.set_yticks([0,1])
+    axins1.set_yticklabels(['0','1'],fontdict={'size':inset_fontsz})
+    axins1.set_ylabel('Gain',fontdict={'size':inset_fontsz})
+    axins1.text(0.6,0.25,'Filter Cutoff',fontdict={'size':inset_fontsz},transform=axins1.transAxes)
+    axins1.arrow(0.59,0.28,-0.1,0,head_width=0.08, head_length=0.05, transform=axins1.transAxes,facecolor='k')
+    plt.xlim([0.0000001,0.0005])
+    plt.grid(which='both', axis='x')
+
+    #---------plot inset of sensitivity analysis of filter period-----------------
+    axins2 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.58,0.63,0.15,0.3), bbox_transform=ax1.transAxes)
+    axins2.plot(max_days, max_corrs)
+    axins2.set_title('Correlation Between $\Delta T$ & High-Pass Filtered Salinity \n As a Function of Filter Cutoff Period', fontdict={'size':inset_fontsz})
+    axins2.set_xlabel('Filter Cutoff Period (days)', fontdict={'size':inset_fontsz})
+    axins2.set_ylabel('Correlation Coefficient', fontdict={'size':inset_fontsz})
+    axins2.set_xticks([1,2,3,4,5,6,7,8])
+    axins2.set_xticklabels([1,2,3,4,5,6,7,8],fontdict={'size':inset_fontsz})
+    axins2.set_yticks([0.5,0.55,0.6])
+    axins2.set_yticklabels([0.5,0.55,0.6],fontdict={'size':inset_fontsz})
+
+    #---------ROW 2------------------------------------
+    #define subset times
+    start_sub1,end_sub1 = pd.datetime(2019,1,8),pd.datetime(2019,1,18)
+    start_sub2,end_sub2 = pd.datetime(2019,1,27),pd.datetime(2019,2,6)
+    start_sub3,end_sub3 = pd.datetime(2019,3,3),pd.datetime(2019,3,13)
+    start_sub4,end_sub4 = pd.datetime(2019,3,14),pd.datetime(2019,3,24)
+
+    salticks = [0,10,20,30]
+    lwd = 2
+    lalph = 0.5
+    #-------plot dT-S subset 1------------
+    ax11 = plt.subplot2grid(shape=(16,4),loc=(9,0),rowspan=5,colspan=1)
+    h1 = ax11.scatter(rbr.Salinity_Adjusted.loc[start_sub1:end_sub1],rbr.deltaT_Adjusted.loc[start_sub1:end_sub1],s=3,c=rbr.loc[start_sub1:end_sub1].index,cmap=cc.cm.rainbow)
+    ax11.set_ylim([0,0.5])
+    ax11.set_xlim([0,30])
+    ax11.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    ax11.tick_params(axis='y', colors='darkred')
+    ax11.tick_params(axis='x', colors='k')
+    ax11.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    ax11.set_xlabel('Salinity (psu)')
+    #ax11.set_xticks(salticks)
+    ax11.grid(alpha=0.2)
+    ax11.set_title('')
+
+    cax11 = plt.subplot2grid(shape=(32,4),loc=(17,0),rowspan=1,colspan=1)
+    cbar11 = plt.colorbar(h1, orientation='horizontal',cax=cax11,ticks=[])
+    cbar11.set_label(start_sub1.strftime('%b %d') + ' to ' + end_sub1.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+
+    ax1.arrow(x=start_sub1,y=-5,dx=0.01,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+    ax1.arrow(x=end_sub1,y=-5,dx=8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+
+    #-------plot dT-S subset 2------------
+    ax12 = plt.subplot2grid(shape=(16,4),loc=(9,1),rowspan=5,colspan=1)
+    h2 = ax12.scatter(rbr.Salinity_Adjusted.loc[start_sub2:end_sub2],rbr.deltaT_Adjusted.loc[start_sub2:end_sub2],s=3,c=rbr.loc[start_sub2:end_sub2].index,cmap=cc.cm.rainbow)
+    ax12.set_ylim([0,0.5])
+    ax12.set_xlim([0,30])
+    ax12.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    ax12.tick_params(axis='y', colors='darkred')
+    ax12.tick_params(axis='x', colors='k')
+    #ax12.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    ax12.set_xlabel('Salinity (psu)')
+    ax12.grid(alpha=0.2)
+    ax12.set_title('')
+
+    cax12 = plt.subplot2grid(shape=(32,4),loc=(17,1),rowspan=1,colspan=1)
+    cbar12 = plt.colorbar(h2, orientation='horizontal',cax=cax12,ticks=[])
+    cbar12.set_label(start_sub2.strftime('%b %d') + ' to ' + end_sub2.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+
+    ax1.arrow(x=start_sub2,y=-5,dx=2.8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+    ax1.arrow(x=end_sub2,y=-5,dx=11,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+
+    #-------plot dT-S subset 3------------
+    ax13 = plt.subplot2grid(shape=(16,4),loc=(9,2),rowspan=5,colspan=1)
+    h3 = ax13.scatter(rbr.Salinity_Adjusted.loc[start_sub3:end_sub3],rbr.deltaT_Adjusted.loc[start_sub3:end_sub3],s=3,c=rbr.loc[start_sub3:end_sub3].index,cmap=cc.cm.rainbow)
+    ax13.set_ylim([0,0.5])
+    ax13.set_xlim([0,30])
+    ax13.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    ax13.tick_params(axis='y', colors='darkred')
+    ax13.tick_params(axis='x', colors='k')
+    #ax13.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    ax13.set_xlabel('Salinity (psu)')
+    #ax11.set_xticks(salticks)
+    ax13.grid(alpha=0.2)
+    ax13.set_title('')
+
+    cax13 = plt.subplot2grid(shape=(32,4),loc=(17,2),rowspan=1,colspan=1)
+    cbar13 = plt.colorbar(h3, orientation='horizontal',cax=cax13,ticks=[])
+    cbar13.set_label(start_sub3.strftime('%b %d') + ' to ' + end_sub3.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+
+    ax1.arrow(x=start_sub3,y=-5,dx=-10.2,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+    ax1.arrow(x=end_sub3,y=-5,dx=-2.1,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+
+    #-------plot dT-S subset 4------------
+    ax14 = plt.subplot2grid(shape=(16,4),loc=(9,3),rowspan=5,colspan=1)
+    h4 = ax14.scatter(rbr.Salinity_Adjusted.loc[start_sub4:end_sub4],rbr.deltaT_Adjusted.loc[start_sub4:end_sub4],s=3,c=rbr.loc[start_sub4:end_sub4].index,cmap=cc.cm.rainbow)
+    ax14.set_ylim([0,0.5])
+    ax14.set_xlim([0,30])
+    ax14.set_yticks([0,0.1,0.2,0.3,0.4,0.5])
+    ax14.tick_params(axis='y', colors='darkred')
+    ax14.tick_params(axis='x', colors='k')
+    #ax14.set_ylabel('$\Delta T$ ($^{\circ} C$)',color='darkred')
+    ax14.set_xlabel('Salinity (psu)')
+    #ax11.set_xticks(salticks)
+    ax14.grid(alpha=0.2)
+    ax14.set_title('')
+
+    cax14 = plt.subplot2grid(shape=(32,4),loc=(17,3),rowspan=1,colspan=1)
+    cbar14 = plt.colorbar(h4, orientation='horizontal',cax=cax14,ticks=[])
+    cbar14.set_label(start_sub4.strftime('%b %d') + ' to ' + end_sub4.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+
+    ax1.arrow(x=start_sub4,y=-5,dx=0.7,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+    ax1.arrow(x=end_sub4,y=-5,dx=8.8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
+
+
+    #from matplotlib.patches import Polygon
+    #p11 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
+    #p12 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
+    #p13 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
+    #p14 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
+
+    #ax11.add_patch(p11) 
+    #ax12.add_patch(p12) 
+    #ax13.add_patch(p13) 
+    #ax14.add_patch(p14) 
+    
+#######################################################################################
+
+def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
+    '''
+    '''
+    # Prep vectors for correlation
+    #-----Co-locate vectors in time-------
+    tempz = rbr.Temperature.resample('15min').mean()
+    curr = aqd2dir.mean(dim='bindepth').speed
+    sali = rbr.Salinity.resample('15min').mean()
+
+    #-----De-mean the vectors--------------
+    tempzDT_temp = tempz - tempz.mean()
+    tempzDT = tempzDT_temp.to_xarray()
+    currDT = curr - curr.mean()
+    saliDT_temp = sali - sali.mean()
+    saliDT = saliDT_temp.to_xarray()
+    saliDT = saliDT.rename({'Date_Time':'time'})
+
+    #current direction vs dT/dt
+    meandir = aqd2dir.direction.mean(dim='bindepth').values
+    labelfontsz=22
+    lw = 2
+
+    plt.rcParams.update({'font.size': labelfontsz})
+    fig = plt.figure(figsize=(24,16),facecolor='w')
+
+    #-------TOP ROW---------
+
+    ax1 = plt.subplot2grid(shape=(2,6),loc=(0,0),rowspan=1,colspan=4, fig=fig)
+    ax1.set_title('Changes in Water Properties Are Related to Current Direction',pad=25)
+    h1 = ax1.pcolormesh(aqd2dir.time,[0,1],[meandir,meandir],cmap=cc.cm.cyclic_tritanopic_cwrk_40_100_c20,vmin=0,vmax=360)
+    ax1.set_yticks([])
+    ax1.set_xlim([start, end])
+
+    par = ax1.twinx()
+    par.plot(rbr.Temperature.resample('4H').mean(),'gray',ls='--',linewidth=lw)
+    par.set_ylabel('Temperature ($^\circ C$)',color='gray')
+    par.yaxis.tick_left()
+    par.yaxis.set_label_position("left")
+    offset = 85
+    par.spines['left'].set_position(('outward',offset))
+    par.spines['left'].set_color('gray')
+    par.tick_params(axis='y', colors='gray')
+
+    #par.legend(['Water Temperature'])
+
+    par2 = ax1.twinx()
+    par2.plot(rbr.Salinity,'k',linewidth=lw)
+    par2.yaxis.tick_left()
+    par2.yaxis.set_label_position("left")
+    par2.set_ylabel('Salinity (psu)')
+
+    cbar_ax1 = plt.subplot2grid(shape=(2,96),loc=(0,66),rowspan=1,colspan=3, fig=fig)
+    cbar1 = fig.colorbar(h1, cax=cbar_ax1)
+    cbar1.set_label('Current Direction',fontdict={'fontsize':labelfontsz},labelpad=-120)
+    cbar1.set_ticks([0,45,90,135,180,225,270,315,360])
+    cbar1.set_ticklabels(['  N',' NE','  E',' SE','  S',' SW','  W',' NW','  N'])
+
+    ax2 = plt.subplot2grid(shape=(2,12),loc=(0,9),rowspan=1,colspan=3, fig=fig)
+    resample_freq = '24H'
+    temp_rsmpl = rbr.Temperature.resample(resample_freq).mean()
+    dTempdt = pd.Series(np.gradient(temp_rsmpl.values),temp_rsmpl.index)
+    sal_rsmpl = rbr.Salinity.resample(resample_freq).mean()
+    dSaldt = pd.Series(np.gradient(sal_rsmpl.values),sal_rsmpl.index)
+    dir_rsmpl = aqd2dir.direction.mean(dim='bindepth').to_pandas().resample(resample_freq).median()
+    hdT = ax2.scatter(dTempdt,dir_rsmpl,marker='o',facecolors='w',edgecolors='gray')
+    ax2.set_xlabel('dT/dt ($^\circ C / day $)',color='gray')
+    ax2.tick_params(axis='x', colors='gray')
+    ax2.set_xlim([-0.35,0.35])
+    ax2.set_ylim([0,360])
+    ax2.set_yticks([0,45,90,135,180,225,270,315,360])
+    ax2.set_yticklabels([])
+
+    parr = ax2.twiny()
+    hdS = parr.scatter(dSaldt,dir_rsmpl,marker='.',s=150,color='k')
+    parr.set_xlabel('dS/dt ($psu / day $)')
+    parr.set_xlim([-8,8])
+    parr.axvline(x=0, ls=':',color='cornflowerblue')
+
+    plt.legend([hdS,hdT],['dSalinity/dt','dTemperature/dt'],loc='upper center',framealpha=1,markerscale=2)
+
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(9))
+    myFmt = mdates.DateFormatter('%b %d')
+    ax1.xaxis.set_major_formatter(myFmt);
+
+
+    #------BOTTOM ROW-----------------
+
+    #initialize subplot
+    ax11 = plt.subplot2grid(shape=(7,12), loc=(4,5), rowspan=4, colspan=6, fig=fig,zorder=100)
+
+    #add axes for wind rose
+    rect=[-0.05,0.05,0.5,0.4]  # [left, bottom, width, height]
+    wa=windrose.WindroseAxes(fig, rect)
+    fig.add_axes(wa)
+
+    #fill wind rose
+    h = wa.contourf(aqdXr.mean(dim='bindepth').direction.values, aqdXr.mean(dim='bindepth').speed.values, bins=[0,0.1,0.2,0.3,0.4,0.5,0.6,0.7,0.8,0.9,1],nsector=64,cmap=cm.bone_r)
+    wa.set_yticklabels([])
+    wa.set_xticklabels(['E','NE','N','NW','W','SW','S','SE'],fontdict={'fontsize':labelfontsz})
+    wa.legend(labelspacing=0.001,title='Speed (m/s)',labels=[],fontsize=17,borderaxespad=1,framealpha=1,bbox_to_anchor=(0.75,0.4),bbox_transform=wa.transAxes)
+    wa.set_title('Defining a "Bi-Directional Current" Parameter:',fontdict={'fontsize':24},pad=10)
+
+    #plot cross correlations
+    plt.sca(ax11)
+    plt.xcorr(saliDT,currDT,maxlags=400,usevlines=False,zorder=10,color='k');
+    plt.xcorr(tempzDT,currDT,maxlags=400,usevlines=False,zorder=11,color='lightgray');
+    plt.yticks([-0.6,-0.4,-0.2,0,0.2,0.4,0.6],fontsize=labelfontsz)
+    plt.ylabel('Correlation Coefficient',fontsize=labelfontsz)
+    plt.xticks([-400,-300,-200,-100,0,100,200,300,400],labels=[-100,-75,-50,-25,0,25,50,75,100],fontsize=labelfontsz)
+    plt.xlabel('Lag (hours)',fontsize=labelfontsz)
+    plt.title('Lag Correlation of "Bi-Directional Current" vs. T & S',fontsize=24,pad=15)
+    plt.xlim([-200,400])
+    plt.ylim([-0.7,0.7])
+    lgnd = plt.legend(['Currents x Salinity','Currents x Temperature'],fontsize=labelfontsz,bbox_to_anchor=(0.55,0.5),bbox_transform=ax11.transAxes,framealpha=1,markerscale=2)
+    plt.plot([-200,400],[0,0],'gray',zorder=0,alpha=0.5)
+    plt.plot([100,100],[-0.7,0.7],'--',color='cornflowerblue')
+
+    #add arrows and text to wind rose plot
+    ax11.annotate("", xytext=(-680, 0.07), xy=(-650, 0.3), arrowprops=dict(arrowstyle="->",clip_on=False,color='lightskyblue',linewidth=5),annotation_clip=False)
+    ax11.annotate("+", xy=(-658, 0.3), color='lightskyblue',fontsize=36,weight='bold',annotation_clip=False)
+
+    ax11.annotate("", xytext=(-680, 0.07), xy=(-709, -0.17), arrowprops=dict(arrowstyle="->",clip_on=False,color='indianred',linewidth=5),annotation_clip=False)
+    ax11.annotate("-", xy=(-720, -0.27), color='indianred',fontsize=60,annotation_clip=False)
+
+    ax11.annotate("", xytext=(-412, -0.58), xy=(-780, 0.3), arrowprops=dict(arrowstyle="-",clip_on=False,color='k',linewidth=4),annotation_clip=False)
+
+    ax11.annotate("Flow direction \ndetermines sign", xy=(-729, 0.41), color='k',fontsize=16,annotation_clip=False)
+    ax11.annotate("Flow speed \ndetermines \nmagnitude", xy=(-570, 0.35), color='k',fontsize=16,annotation_clip=False)
