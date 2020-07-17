@@ -16,6 +16,7 @@ from osgeo import gdal, osr
 import glob
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
+from matplotlib.patches import ConnectionPatch
 
 def subset_ssmi(ssmi, lat_min, lat_max, lon_min, lon_max, xmin, xmax, ymin, ymax):
     '''
@@ -408,15 +409,21 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
     subplot_kw = dict(projection=projection)
     #initialize figure
     fig, axx = plt.subplots(nrows=3, ncols=cols, figsize=figsz, subplot_kw=subplot_kw, facecolor='w')
-
+    fig.suptitle('Satellite Imagery of the Sea Ice Breakup Process in Kotzebue Sound in 2007, 2012, and 2019',y=0.95,fontsize=28)
+    
     for idx in np.arange(0,cols):
         plot_MODIS_geotiff(axx[0,idx], paths_2007[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
-
-    for idx in np.arange(0,cols):
         plot_MODIS_geotiff(axx[1,idx], paths_2012[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
-
-    for idx in np.arange(0,cols):
         plot_MODIS_geotiff(axx[2,idx], paths_2019[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
+        
+    for idx in np.arange(0,cols-1):
+        for row in np.arange(0,3):
+            con = ConnectionPatch(xyA=(1,0.5), coordsA=axx[row,idx].transAxes,
+                                  xyB=(0,0.5), coordsB=axx[row,idx+1].transAxes,
+                                  arrowstyle='->',linewidth=6,mutation_scale=50)
+            fig.add_artist(con)
+        
+    
 
     axx[0,0].set_title('May 24, 2007',fontsize=fontsz)
     axx[0,1].set_title('June 1, 2007',fontsize=fontsz)
