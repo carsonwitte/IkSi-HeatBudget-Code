@@ -410,12 +410,12 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     l1 = axx[0].legend(['$F_{LW_{net}}$','$F_{SW_{net}}$','$F_{sensible}$','$F_{total}$'],bbox_to_anchor=(1.001,0.83),fontsize=lgndfont)
 
 
-    axx[1].plot(scale*Fw_plot, linewidth=linewd*2)
-    axx[1].plot(Fc_plot,'purple',linewidth=linewd*2)
-    axx[1].plot(resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1)
+    axx[1].plot(-Fc_plot,'purple',linewidth=linewd*2)
+    axx[1].plot(-scale*Fw_plot,'C0',linewidth=linewd*2)
+    axx[1].plot(-resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1)
     axx[1].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
     axx[1].set_ylim([-100,100])
-    l2 = axx[1].legend(['$F_{water}$','$F_{conductive}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
+    l2 = axx[1].legend(['$F_{conductive}$','$F_{water}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
     axx[1].set_title('Fluxes at the Ice-Water Interface')
     axx[1].set_ylabel('$W/m^2$')
 
@@ -794,7 +794,21 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     t_freeze = gsw.t_freezing(gsw.SA_from_SP(si,pres,lon,lat),pres,0)
     h2 = ax1.plot(si,t_freeze,'k',linewidth=1)
     ax1.legend(['Fall (Oct-Dec)','Spring (Apr-Jun)','Freezing Point'],loc='upper left',framealpha=1);
-    ax1.set_title('Fall vs. Spring in T-S Space')
+    ax1.set_title('      OBT: Fall vs. Spring in T-S Space',pad=10)
+    
+    #----------Add Bering Strait climatological salinity ranges-------
+    #from Woodgate et al 2005
+    fall_minsal = 31.4
+    fall_maxsal = 32.6
+    spring_minsal = 32.25
+    spring_maxsal = 33.25
+
+    plt.annotate('}',xy = (fall_minsal,3),rotation=90,fontsize=80,color='C1')
+    plt.annotate('}',xy = (spring_minsal,2),rotation=90,fontsize=80,color='C2')
+    plt.text(x=31.7,y=4.1,s='Bering Strait \nclimatological \nsalinity ranges for \nrespective seasons',fontsize=12,bbox=dict(facecolor='w',edgecolor='gray'))
+    plt.arrow(x=32.1,y=4.1,dx=0,dy=-0.5,head_width=0.08,facecolor='k')
+    plt.arrow(x=32.95,y=4.1,dx=0,dy=-1.5,head_width=0.08,facecolor='k',clip_on=False)
+
 
 ####################################################################################################
 
@@ -935,7 +949,7 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
 
     cax11 = plt.subplot2grid(shape=(32,4),loc=(17,0),rowspan=1,colspan=1)
     cbar11 = plt.colorbar(h1, orientation='horizontal',cax=cax11,ticks=[])
-    cbar11.set_label(start_sub1.strftime('%b %d') + ' to ' + end_sub1.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+    cbar11.set_label(start_sub1.strftime('%b %d') + ' to ' + end_sub1.strftime('%b %d'),fontdict={'fontsize':24},labelpad=-19)
 
     ax1.arrow(x=start_sub1,y=-5,dx=0.01,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
     ax1.arrow(x=end_sub1,y=-5,dx=8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
@@ -955,7 +969,7 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
 
     cax12 = plt.subplot2grid(shape=(32,4),loc=(17,1),rowspan=1,colspan=1)
     cbar12 = plt.colorbar(h2, orientation='horizontal',cax=cax12,ticks=[])
-    cbar12.set_label(start_sub2.strftime('%b %d') + ' to ' + end_sub2.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+    cbar12.set_label(start_sub2.strftime('%b %d') + ' to ' + end_sub2.strftime('%b %d'),fontdict={'fontsize':24},labelpad=-19)
 
     ax1.arrow(x=start_sub2,y=-5,dx=2.8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
     ax1.arrow(x=end_sub2,y=-5,dx=11,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
@@ -976,7 +990,7 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
 
     cax13 = plt.subplot2grid(shape=(32,4),loc=(17,2),rowspan=1,colspan=1)
     cbar13 = plt.colorbar(h3, orientation='horizontal',cax=cax13,ticks=[])
-    cbar13.set_label(start_sub3.strftime('%b %d') + ' to ' + end_sub3.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+    cbar13.set_label(start_sub3.strftime('%b %d') + ' to ' + end_sub3.strftime('%b %d'),fontdict={'fontsize':24},labelpad=-19)
 
     ax1.arrow(x=start_sub3,y=-5,dx=-10.2,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
     ax1.arrow(x=end_sub3,y=-5,dx=-2.1,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
@@ -997,7 +1011,7 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
 
     cax14 = plt.subplot2grid(shape=(32,4),loc=(17,3),rowspan=1,colspan=1)
     cbar14 = plt.colorbar(h4, orientation='horizontal',cax=cax14,ticks=[])
-    cbar14.set_label(start_sub4.strftime('%b %d') + ' to ' + end_sub4.strftime('%b %d'),fontdict={'fontsize':20},labelpad=-18)
+    cbar14.set_label(start_sub4.strftime('%b %d') + ' to ' + end_sub4.strftime('%b %d'),fontdict={'fontsize':24},labelpad=-19)
 
     ax1.arrow(x=start_sub4,y=-5,dx=0.7,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)
     ax1.arrow(x=end_sub4,y=-5,dx=8.8,dy=-3.5,clip_on=False,color='gray',linewidth=lwd,zorder=0,alpha=lalph)

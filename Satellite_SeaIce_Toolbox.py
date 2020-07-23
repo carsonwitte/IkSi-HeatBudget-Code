@@ -178,7 +178,7 @@ def plot_monthly_anomalies(si, sst):
     Outputs: no outputs, but a figure.
     '''
     #set font size for plot (could make this an input)
-    fontsz = 14
+    fontsz = 20
 
     #suppress warnings that we expect
     warnings.filterwarnings("ignore", message="Slicing")
@@ -197,7 +197,7 @@ def plot_monthly_anomalies(si, sst):
     num_yrs = len(si_gb)
 
     #initialize figure and set color cycle of axes based on how many years we're plotting
-    fig, axx = plt.subplots(nrows=2,ncols=1,figsize=(16,9),facecolor='w')
+    fig, axx = plt.subplots(nrows=2,ncols=1,figsize=(16,10),facecolor='w')
     cm = plt.get_cmap('gist_rainbow')
     axx[0].set_prop_cycle('color',[cm(1.*i/num_yrs) for i in range(num_yrs)])
     axx[1].set_prop_cycle('color',[cm(1.*i/num_yrs) for i in range(num_yrs)])
@@ -224,7 +224,7 @@ def plot_monthly_anomalies(si, sst):
         h = axx[1].bar(months+offset,vals,width=w,align='center')
 
     #plot legend outside of axes
-    axx[0].legend(handles,bbox_to_anchor=(1.01,0.9),prop={'size': fontsz})
+    axx[0].legend(handles,bbox_to_anchor=(1.01,1.01),prop={'size': fontsz-2})
 
     #format x-ticks
     axx[0].set_xticks(np.arange(1,13));
@@ -246,6 +246,7 @@ def plot_monthly_anomalies(si, sst):
 
     axx[1].set_title(f'Sea Surface Temperature 20yr Monthly Anomaly',fontsize=fontsz);
     axx[1].set_ylabel('SST Anomaly ($^{\circ}$C)',fontsize=fontsz);
+
 
 #########################################################################################################
 
@@ -409,12 +410,17 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
     subplot_kw = dict(projection=projection)
     #initialize figure
     fig, axx = plt.subplots(nrows=3, ncols=cols, figsize=figsz, subplot_kw=subplot_kw, facecolor='w')
-    fig.suptitle('Satellite Imagery of the Sea Ice Breakup Process in Kotzebue Sound in 2007, 2012, and 2019',y=0.95,fontsize=28)
+    fig.suptitle('Satellite Imagery of the Sea Ice Breakup Process in Kotzebue Sound',y=0.95,fontsize=40)
     
     for idx in np.arange(0,cols):
         plot_MODIS_geotiff(axx[0,idx], paths_2007[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
         plot_MODIS_geotiff(axx[1,idx], paths_2012[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
         plot_MODIS_geotiff(axx[2,idx], paths_2019[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
+        
+        axx[0,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))   
+        axx[1,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))
+        axx[2,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))
+
         
     for idx in np.arange(0,cols-1):
         for row in np.arange(0,3):
@@ -423,22 +429,25 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
                                   arrowstyle='->',linewidth=6,mutation_scale=50)
             fig.add_artist(con)
         
+
+    axx[0,0].set_title('May 24',fontsize=fontsz)
+    axx[0,1].set_title('June 1',fontsize=fontsz)
+    axx[0,2].set_title('June 5',fontsize=fontsz)
+    axx[0,3].set_title('June 11',fontsize=fontsz)
+
+    axx[1,0].set_title('May 24',fontsize=fontsz)
+    axx[1,1].set_title('May 31',fontsize=fontsz)
+    axx[1,2].set_title('June 7',fontsize=fontsz)
+    axx[1,3].set_title('June 16',fontsize=fontsz)
+
+    axx[2,0].set_title('April 23',fontsize=fontsz)
+    axx[2,1].set_title('May 10',fontsize=fontsz)
+    axx[2,2].set_title('May 16',fontsize=fontsz)
+    axx[2,3].set_title('May 25',fontsize=fontsz)
     
-
-    axx[0,0].set_title('May 24, 2007',fontsize=fontsz)
-    axx[0,1].set_title('June 1, 2007',fontsize=fontsz)
-    axx[0,2].set_title('June 5, 2007',fontsize=fontsz)
-    axx[0,3].set_title('June 11, 2007',fontsize=fontsz)
-
-    axx[1,0].set_title('May 24, 2012',fontsize=fontsz)
-    axx[1,1].set_title('May 31, 2012',fontsize=fontsz)
-    axx[1,2].set_title('June 7, 2012',fontsize=fontsz)
-    axx[1,3].set_title('June 16, 2012',fontsize=fontsz)
-
-    axx[2,0].set_title('April 23, 2019',fontsize=fontsz)
-    axx[2,1].set_title('May 10, 2019',fontsize=fontsz)
-    axx[2,2].set_title('May 16, 2019',fontsize=fontsz)
-    axx[2,3].set_title('May 25, 2019',fontsize=fontsz)
+    plt.figtext(x=0.1,y=0.745,s='2007',rotation=90,fontsize=40)
+    plt.figtext(x=0.1,y=0.475,s='2012',rotation=90,fontsize=40)
+    plt.figtext(x=0.1,y=0.21,s='2019',rotation=90,fontsize=40)
 
 #########################################################################################################
 
