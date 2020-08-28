@@ -1250,3 +1250,98 @@ def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
     plt.text(x=0.65,y=2.47,s='(b)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-1.1,y=1.02,s='(c)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-0.08,y=1.05,s='(d)',transform=plt.gca().transAxes,fontsize=30)
+
+    
+#######################################################################################
+
+def plot_ustar(ustar,aqd2dir,StvRe,start,end):
+    linewd = 3
+
+    fig = plt.figure(figsize=(24,16),facecolor='w')
+    plt.rcParams['font.size'] = 22
+
+    #-------Plot Ustar timeseries----------------
+    ustar_daily = ustar.rolling(time=4*24,center=True,min_periods=2).mean()
+    ustar_err = ustar.rolling(time=4*24,center=True,min_periods=2).std()
+
+    ax1 = plt.subplot2grid(shape=(5,1),loc=(0,0),rowspan=2,colspan=1,fig=fig)
+    #ax1.fill_between(ustar_daily.time.values,y1=ustar_daily-ustar_err,y2=ustar_daily+ustar_err,color='lightgrey',alpha=0.6)
+    ax1.plot(ustar_daily.time.values,ustar_daily,'goldenrod',linewidth=linewd*2,alpha=1)
+    ax1.set_ylabel('$u_{*0}$  $(m/s)$',color='goldenrod',fontsize=30)
+    ax1.set_ylim([0,0.12])
+    ax1.set_title('Friction Velocities Throughout Study Period')
+    #ax1.legend(['1$\sigma$','$u_{*0}$'])
+    ax1.grid(alpha=0.1)
+
+    ax1.set_xlim([start, end])
+    ax1.xaxis.set_major_locator(ticker.MultipleLocator(8))
+    myFmt = mdates.DateFormatter('%b %d')
+    ax1.xaxis.set_major_formatter(myFmt);
+
+    #---------Plot mean current profiles--------------
+    minv = 0.1
+
+    aqdNdir = aqd2dir.where(aqd2dir.speed.mean(dim='bindepth')>minv)
+    aqdNdir_mean = aqdNdir.speed.mean(dim='time',skipna=True)
+    aqdNdir_std = aqdNdir.speed.std(dim='time',skipna=True)
+
+    aqdSdir = aqd2dir.where(aqd2dir.mean(dim='bindepth').speed<-minv)
+    aqdSdir_mean = aqdSdir.speed.mean(dim='time',skipna=True)
+    aqdSdir_std = aqdSdir.speed.std(dim='time',skipna=True)
+
+    ax21 = plt.subplot2grid(shape=(10,10),loc=(5,0),rowspan=5,colspan=2,zorder=10)
+    ax21.plot(aqdSdir_mean,aqdSdir.bindepth,linewidth=4)
+    ax21.fill_betweenx(aqdSdir.bindepth,(aqdSdir_mean-aqdSdir_std),(aqdSdir_mean+aqdSdir_std),color='grey',alpha=0.1)
+    ax21.axhspan(0,0.6,color='grey')
+    ax21.set_ylim([0,5.5])
+    ax21.set_xlim([-0.65,0])
+    ax21.set_xticks([0,-0.2,-0.4,-0.6])
+    ax21.set_xticklabels(['   0','-0.2','-0.4','-0.6'])
+    ax21.invert_yaxis()
+    ax21.set_ylabel('Depth (m)')
+    ax21.set_xlabel('Speed (m/s)')
+    ax21.set_title('Southward',fontsize=24)
+    ax21.grid(alpha=0.1)
+    ax21.text(0.435,0.925,'Ice',color='w', transform=ax21.transAxes)
+    legHs = ax21.legend(['Mean','1$\sigma$'],bbox_to_anchor=(1.35,0.5),framealpha=1)
+    legHs.legendHandles[1].set_alpha(0.2)
+
+
+    ax22 = plt.subplot2grid(shape=(10,10),loc=(5,2),rowspan=5,colspan=2)
+
+    ax22.plot(aqdNdir_mean,aqdNdir.bindepth,linewidth=4)
+    ax22.fill_betweenx(aqdNdir.bindepth,(aqdNdir_mean-aqdNdir_std),(aqdNdir_mean+aqdNdir_std),color='grey',alpha=0.1)
+    ax22.axhspan(0,0.6,color='grey')
+    ax22.set_xlim([0,0.65])
+    ax22.set_ylim([0,5.5])
+    ax22.set_yticklabels([])
+    ax22.set_xticks([0,0.2,0.4,0.6])
+    ax22.set_xticklabels(['','0.2','0.4','0.6'])
+    ax22.invert_yaxis()
+    ax22.set_title('Northward',fontsize=24)
+    ax22.set_xlabel('Speed (m/s)')
+    ax22.grid(alpha=0.1)
+    ax22.text(0.435,0.925,'Ice',color='w', transform=ax22.transAxes)
+
+    ax21.text(0.14,1.1,'Mean Current Profiles by Direction', transform=ax21.transAxes,fontsize=26)
+
+    #----------Plot St vs. Re -----------------
+
+
+    ax23 = plt.subplot2grid(shape=(10,4),loc=(5,2),rowspan=5,colspan=2)
+
+    mkr_dict = {'Umea': 'x', 'MZX 84': '+', 'CRX 88': 'o','CRX 89':'<','ANZ 94':'2','SHEBA':'*','This Work':'H'}
+    for experiment in mkr_dict:
+        d = StvRe[StvRe.index==experiment]
+        ax23.scatter(d.Re, d.St,s = 400, marker = mkr_dict[experiment])
+
+    ax23.set_ylim([0,0.008])
+    ax23.grid()
+    ax23.set_xlabel(r'$Re_* = u_{*0}z_0/\nu$')
+    ax23.set_ylabel('$St_*$')
+    ax23.set_title('Bulk Heat Transfer Coefficient vs. \nSurface Friction Reynolds Number')#,fontdict={'fontsize':'16'})
+    ax23.legend(StvRe.index)
+
+    plt.text(x=-1.08,y=1.96,s='(a)',transform=plt.gca().transAxes,fontsize=26)
+    plt.text(x=-1.15,y=1.08,s='(b)',transform=plt.gca().transAxes,fontsize=26)
+    plt.text(x=-0.08,y=1.08,s='(c)',transform=plt.gca().transAxes,fontsize=26)
