@@ -732,6 +732,93 @@ def plot_OBT_sections(sbeOBT18, sbeOBT, start1, end1, start2, end2, sal_lims, te
 
 #########################################################################################################
 
+#########################################################################################################
+
+def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, startfall2, endfall2, sal_lims_fall, temp_lims_fall, temp_ticks_fall, temp_tick_labels_fall, nticks_fall, startspring1, endspring1, startspring2, endspring2, sal_lims_spring, temp_lims_spring, temp_ticks_spring, temp_tick_labels_spring, nticks_spring):
+    '''
+    '''
+    #---subset to date range-----
+    sbe1 = sbeOBT18.loc[start1:end1]
+    sbe2 = sbeOBT.loc[start2:end2]
+
+    #---intiialize x-ticks------
+    xticks17 = pd.date_range(start1, end1, periods=nticks+2)[1:-1]
+    xticks18 = pd.date_range(start2, end2, periods=nticks+2)[1:-1]
+    myFmt = mdates.DateFormatter('%b %d')
+
+    #------initialize figure--------
+    fig = plt.figure(figsize=(14,8),facecolor='w')
+    plt.rcParams['font.size'] = 16
+
+    #------Fall 2017 Timeseries-----
+    ax1 = plt.subplot2grid((64,6),(0,0),rowspan=27,colspan=4)
+    ax1.plot(sbe1.sal,'mediumblue')
+    ax1.set_xlim([start1,end1])
+    ax1.set_ylim(sal_lims)
+    ax1.set_ylabel('Salinity (psu)',color='mediumblue')
+    ax1.set_title('Fall 2017')
+    par1 = ax1.twinx()
+    par1.plot(sbe1.temp,'darkred')
+    par1.set_ylim(temp_lims)
+    par1.set_yticklabels([])
+    par1.set_yticks(temp_ticks)
+    par1.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    ax1.set_xticks(xticks17)
+    ax1.set_xticklabels([''])
+
+    #------Fall 2017 TS Diagram-----
+    ax11 = plt.subplot2grid((64,24),(0,17),rowspan=27,colspan=6)
+    h2 = plot_ts_diagram(sbe1.temp,sbe1.sal,temp_lims,sal_lims,ax11)
+    ax11.set_yticks(temp_ticks)
+    ax11.set_yticklabels(temp_tick_labels,color='darkred')
+
+    #-----Fall 2018 Timeseries------
+    ax2 = plt.subplot2grid((64,6),(32,0),rowspan=27,colspan=4,facecolor='none')
+    ax2.set_title('Fall 2018')
+    ax2.set_yticks([])
+    ax2.set_xlim([start2,end2])
+    ax2.set_zorder(1)
+
+
+
+    par21 = ax2.twinx()
+    par21.plot(sbe2.sal,'mediumblue')
+    par21.set_ylim(sal_lims)
+    par21.yaxis.tick_left()
+    par21.yaxis.set_label_position('left')
+    par21.set_ylabel('Salinity (psu)',color='mediumblue')
+
+
+    par2 = ax2.twinx()
+    par2.plot(sbe2.temp,'darkred')
+    #par2.set_xlim([start2,end2])
+    par2.set_ylim(temp_lims)
+    par2.set_yticks(temp_ticks)
+    par2.set_yticklabels([])
+    par2.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    par2.set_zorder(1)
+
+    par2.xaxis.set_major_formatter(myFmt);
+    par2.set_xticks(xticks18)
+
+    #-----Fall 2018 TS Diagram-------
+    ax21 = plt.subplot2grid((64,24),(32,17),rowspan=27,colspan=6)
+    chandle = plot_ts_diagram(sbe2.temp,sbe2.sal,temp_lims,sal_lims,ax21)
+    ax21.set_xlabel('Salinity (psu)',color='mediumblue')
+    ax21.set_yticks(temp_ticks)
+    ax21.set_yticklabels(temp_tick_labels,color='darkred')
+
+    cax21 = plt.subplot2grid((50,6),(46,0),rowspan=3,colspan=4)
+    cbar2 = fig.colorbar(chandle, orientation='horizontal',cax=cax21,ticks=[])
+    cax21.set_zorder(0)
+
+    fig.suptitle('Temperature vs. Salinity at OBT: Fall',y=0.96,fontsize=22);
+
+#########################################################################################################
+
+
 def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19, spring_end_19, lat=66.8968, lon=-162.6139):
     '''
     '''
@@ -890,12 +977,12 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
 
 
     #-----------plot inset of filter being applied-----------------
-    inset_fontsz=12
+    inset_fontsz=14
     period_ticks = np.array([50,10,3,1,0.1]) #days
     period_secs = period_ticks*24*3600 #seconds
     freq_ticks = 1/period_secs
     #axins1 = inset_axes(ax1, width="15%", height="30%", loc='upper center', borderpad=1)
-    axins1 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.36,0.63,0.15,0.3), bbox_transform=ax1.transAxes)
+    axins1 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.36,0.53,0.2,0.4), bbox_transform=ax1.transAxes)
     b, a = butter_highpass(cutoff, fs, order=1)
     w, h = signal.freqz(b, a, worN=4096)
     axins1.axvline(x=cutoff,color='k',linewidth=3,ls='--')
@@ -913,7 +1000,7 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
     plt.grid(which='both', axis='x')
 
     #---------plot inset of sensitivity analysis of filter period-----------------
-    axins2 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.58,0.63,0.15,0.3), bbox_transform=ax1.transAxes)
+    axins2 = inset_axes(ax1, width="100%", height="100%", bbox_to_anchor=(0.63,0.53,0.2,0.4), bbox_transform=ax1.transAxes)
     axins2.plot(max_days, max_corrs)
     axins2.set_title('Correlation Between $\Delta T$ & High-Pass Filtered Salinity \n As a Function of Filter Cutoff Period', fontdict={'size':inset_fontsz})
     axins2.set_xlabel('Filter Cutoff Period (days)', fontdict={'size':inset_fontsz})
@@ -1158,3 +1245,8 @@ def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
 
     ax11.annotate("Flow direction \ndetermines sign", xy=(-729, 0.41), color='k',fontsize=16,annotation_clip=False)
     ax11.annotate("Flow speed \ndetermines \nmagnitude", xy=(-570, 0.35), color='k',fontsize=16,annotation_clip=False)
+    
+    plt.text(x=-1.1,y=2.47,s='(a)',transform=plt.gca().transAxes,fontsize=30)
+    plt.text(x=0.65,y=2.47,s='(b)',transform=plt.gca().transAxes,fontsize=30)
+    plt.text(x=-1.1,y=1.02,s='(c)',transform=plt.gca().transAxes,fontsize=30)
+    plt.text(x=-0.08,y=1.05,s='(d)',transform=plt.gca().transAxes,fontsize=30)
