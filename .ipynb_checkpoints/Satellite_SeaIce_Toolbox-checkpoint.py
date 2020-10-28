@@ -103,7 +103,7 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
                      bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
             #Add data source to map
-            axx.text(0.01, 0.01, 'Data from AMSR-2 Satellite Processed with ASI Algorithm by U.Bremen', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+            axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
                      bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
             #Add custom legend to map
@@ -136,12 +136,12 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
     axx.set_extent([xmin,xmax,ymin,ymax])
 
     #Add title to map
-    axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    #axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add data source to map
-    axx.text(0.01, 0.01, 'Data from AMSR-2 Satellite Processed with ASI Algorithm by U.Bremen', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    #axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add custom legend to map
     #plot legend boxes
@@ -241,10 +241,10 @@ def plot_monthly_anomalies(si, sst):
     axx[1].set_xlim(borders[0],borders[-1]);
 
     #label plots
-    axx[0].set_title(f'Sea Ice Cover 20yr Monthly Anomaly',fontsize=fontsz);
+    axx[0].set_title(f'(a) Sea Ice Cover 20yr Monthly Anomaly',fontsize=fontsz);
     axx[0].set_ylabel('% Sea Ice Coverage Anomaly',fontsize=fontsz);
 
-    axx[1].set_title(f'Sea Surface Temperature 20yr Monthly Anomaly',fontsize=fontsz);
+    axx[1].set_title(f'(b) Sea Surface Temperature 20yr Monthly Anomaly',fontsize=fontsz);
     axx[1].set_ylabel('SST Anomaly ($^{\circ}$C)',fontsize=fontsz);
 
 
@@ -298,11 +298,11 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
             #add rivers shapefile
             axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
             #Add title to map
-            axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+            #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
             #Add data source to map
-            axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+            #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
             #Add custom legend to map
             #plot legend boxes
             axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=400))
@@ -336,11 +336,11 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     #add rivers shapefile
     axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
     #Add title to map
-    axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    #axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add data source to map
-    axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    #axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add custom legend to map
 
     #plot legend boxes

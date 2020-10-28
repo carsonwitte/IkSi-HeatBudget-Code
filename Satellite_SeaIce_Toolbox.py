@@ -103,7 +103,7 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
                      bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
             #Add data source to map
-            axx.text(0.01, 0.01, 'Data from AMSR-2 Satellite Processed with ASI Algorithm by U.Bremen', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+            axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
                      bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
             #Add custom legend to map
@@ -136,12 +136,12 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
     axx.set_extent([xmin,xmax,ymin,ymax])
 
     #Add title to map
-    axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    #axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add data source to map
-    axx.text(0.01, 0.01, 'Data from AMSR-2 Satellite Processed with ASI Algorithm by U.Bremen', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    #axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add custom legend to map
     #plot legend boxes
@@ -241,10 +241,10 @@ def plot_monthly_anomalies(si, sst):
     axx[1].set_xlim(borders[0],borders[-1]);
 
     #label plots
-    axx[0].set_title(f'Sea Ice Cover 20yr Monthly Anomaly',fontsize=fontsz);
+    axx[0].set_title(f'(a) Sea Ice Cover 20yr Monthly Anomaly',fontsize=fontsz);
     axx[0].set_ylabel('% Sea Ice Coverage Anomaly',fontsize=fontsz);
 
-    axx[1].set_title(f'Sea Surface Temperature 20yr Monthly Anomaly',fontsize=fontsz);
+    axx[1].set_title(f'(b) Sea Surface Temperature 20yr Monthly Anomaly',fontsize=fontsz);
     axx[1].set_ylabel('SST Anomaly ($^{\circ}$C)',fontsize=fontsz);
 
 
@@ -298,11 +298,11 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
             #add rivers shapefile
             axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
             #Add title to map
-            axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+            #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
             #Add data source to map
-            axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-                     bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+            #axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+            #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
             #Add custom legend to map
             #plot legend boxes
             axx.add_patch(patches.Rectangle(xy=(x,y), width=w, height=h, edgecolor='k', facecolor=seacolor, alpha=1, transform=axx.transAxes, zorder=400))
@@ -336,11 +336,11 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     #add rivers shapefile
     axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
     #Add title to map
-    axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    #axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add data source to map
-    axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    #axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add custom legend to map
 
     #plot legend boxes
@@ -411,24 +411,24 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
     #initialize figure
     fig, axx = plt.subplots(nrows=3, ncols=cols, figsize=figsz, subplot_kw=subplot_kw, facecolor='w')
     fig.suptitle('Satellite Imagery of the Sea Ice Breakup Process in Kotzebue Sound',y=0.95,fontsize=40)
-    
+
     for idx in np.arange(0,cols):
         plot_MODIS_geotiff(axx[0,idx], paths_2007[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
         plot_MODIS_geotiff(axx[1,idx], paths_2012[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
         plot_MODIS_geotiff(axx[2,idx], paths_2019[idx], coastline, lon_min_MOD, lon_max_MOD, lat_min_MOD, lat_max_MOD )
-        
-        axx[0,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))   
+
+        axx[0,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))
         axx[1,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))
         axx[2,idx].add_patch(patches.Ellipse(xy=(-162.6139,66.8968), width=1.1, height=0.44, edgecolor='r', linewidth=4, transform=ccrs.PlateCarree(), facecolor='none',zorder=400))
 
-        
+
     for idx in np.arange(0,cols-1):
         for row in np.arange(0,3):
             con = ConnectionPatch(xyA=(1,0.5), coordsA=axx[row,idx].transAxes,
                                   xyB=(0,0.5), coordsB=axx[row,idx+1].transAxes,
                                   arrowstyle='->',linewidth=6,mutation_scale=50)
             fig.add_artist(con)
-        
+
 
     axx[0,0].set_title('May 24',fontsize=fontsz)
     axx[0,1].set_title('June 1',fontsize=fontsz)
@@ -444,7 +444,7 @@ def plot_breakup_images(paths_2007, paths_2012, paths_2019, coastline_path, lon_
     axx[2,1].set_title('May 10',fontsize=fontsz)
     axx[2,2].set_title('May 16',fontsize=fontsz)
     axx[2,3].set_title('May 25',fontsize=fontsz)
-    
+
     plt.figtext(x=0.1,y=0.745,s='2007',rotation=90,fontsize=40)
     plt.figtext(x=0.1,y=0.475,s='2012',rotation=90,fontsize=40)
     plt.figtext(x=0.1,y=0.21,s='2019',rotation=90,fontsize=40)
