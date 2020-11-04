@@ -1,0 +1,15 @@
+try making dS/dt a line instead of a filled thing.
+keep a label on the y-axis for flow, and put the annotation on the other side.
+Label it NE current speed. 
+Label it Water Temperature
+
+Minimize text annotations - move to the caption ("negative values" and "shaded regions")
+
+Make a single dT-S plot that shows the two main slopes
+(sal varies independently, vs. sal & T move together)
+
+make dT the same color in middle and bottom panels
+Add line to dT-S plot showing slope for constant temp?
+
+
+Need to make supplementary material showing salinity adjustment for stratified cases??

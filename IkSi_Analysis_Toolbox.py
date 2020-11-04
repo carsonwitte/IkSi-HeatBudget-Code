@@ -250,6 +250,7 @@ def calculate_deltaT(rbr, tempsXrInterp):
     adjusted_deg_above_freezing = subice_temp - adjusted_freezing_point
 
     rbr['Salinity_Adjusted'] = adjusted_salinities
+    rbr['freezing_point_Adjusted'] = adjusted_freezing_point
     rbr['deltaT_Adjusted'] = adjusted_deg_above_freezing
     rbr['subice_temp'] = subice_temp
 
@@ -882,7 +883,7 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     h2 = ax1.plot(si,t_freeze,'k',linewidth=1)
     ax1.legend(['Fall (Oct-Dec)','Spring (Apr-Jun)','Freezing Point'],loc='upper left',framealpha=1);
     ax1.set_title('      OBT: Fall vs. Spring in T-S Space',pad=10)
-    
+
     #----------Add Bering Strait climatological salinity ranges-------
     #from Woodgate et al 2005
     fall_minsal = 31.4
@@ -1110,11 +1111,11 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
     #p13 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
     #p14 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
 
-    #ax11.add_patch(p11) 
-    #ax12.add_patch(p12) 
-    #ax13.add_patch(p13) 
-    #ax14.add_patch(p14) 
-    
+    #ax11.add_patch(p11)
+    #ax12.add_patch(p12)
+    #ax13.add_patch(p13)
+    #ax14.add_patch(p14)
+
 #######################################################################################
 
 def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
@@ -1245,13 +1246,13 @@ def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
 
     ax11.annotate("Flow direction \ndetermines sign", xy=(-729, 0.41), color='k',fontsize=16,annotation_clip=False)
     ax11.annotate("Flow speed \ndetermines \nmagnitude", xy=(-570, 0.35), color='k',fontsize=16,annotation_clip=False)
-    
+
     plt.text(x=-1.1,y=2.47,s='(a)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=0.65,y=2.47,s='(b)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-1.1,y=1.02,s='(c)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-0.08,y=1.05,s='(d)',transform=plt.gca().transAxes,fontsize=30)
 
-    
+
 #######################################################################################
 
 def plot_ustar(ustar,aqd2dir,StvRe,start,end):
