@@ -36,84 +36,42 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
 
     labelfontsz=20
     ylims=[-0.5, 12]
-    h1 = axx[0].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr_r')
-    axx[0].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[0].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[0].set_xlim([start, end])
-    axx[0].set_ylim([-0.5,6])
-    axx[0].invert_yaxis()
-    axx[0].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[0].set_title('Current Speed & Direction [Blue=Northwards, Red=Southwards] (Aquadopp)')
-    fig.subplots_adjust(right=0.9)
-    cbar_ax1 = fig.add_axes([0.91, 0.819, 0.02, 0.06])
-    cbar1 = fig.colorbar(h1, cax=cbar_ax1)
-    cbar1.set_label('Speed (m/s)',fontdict={'fontsize':labelfontsz})
 
-    h2 = axx[1].pcolormesh(tempsXrInterp.time,tempsXrInterp.depth,tempsXrInterp.values,cmap=cc.cm.rainbow,vmin=-1.7,vmax=0)
-    axx[1].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[1].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[1].set_ylim(ylims)
-    axx[1].set_yticks([0,6,12])
-    axx[1].invert_yaxis()
-    axx[1].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[1].set_title('Water Temperature Profile (SBE39s & RBR Concerto)')
-    cbar_ax2 = fig.add_axes([0.91, 0.7415, 0.02, 0.06])
-    cbar2 = fig.colorbar(h2, cax=cbar_ax2)
-    cbar2.set_label('Temp ($^\circ$C)',fontdict={'fontsize':labelfontsz})
-    cbar2.set_ticks([-1.5,-1,-0.5,0])
-
-    axx[4].plot(rbr.index,rbr.Temperature,'orangered')
-    axx[4].set_ylabel('Temp ($^\circ$C)',color='orangered',fontdict={'fontsize':labelfontsz})
-    axx[4].set_ylim([-1.7,0])
-    axx[4].set_title('Water Temperature & Salinity at 3m Depth (RBR Concerto)')
-    par0 = axx[4].twinx()
-    par0.plot(rbr.index,rbr.Salinity,'xkcd:blue')
-    par0.set_ylabel('Salinity (psu)',color='xkcd:blue',fontdict={'fontsize':labelfontsz})
-
-    h3 = axx[2].scatter(maximet.index,maximet.Speed,c=maximet.Direction,s=3,cmap='twilight_shifted')
-    axx[2].set_ylabel('Speed (m/s)',fontdict={'fontsize':labelfontsz})
-    axx[2].set_title('Wind Speed & Direction (MaxiMet)')
-    cbar_ax3 = fig.add_axes([0.91, 0.665, 0.02, 0.06])
+    h3 = axx[0].scatter(maximet.index,maximet.Speed,c=maximet.Direction,s=3,cmap='twilight_shifted')
+    axx[0].set_ylabel('Speed (m/s)',fontdict={'fontsize':labelfontsz})
+    axx[0].set_title('Wind Speed & Direction (MaxiMet)')
+    cbar_ax3 = fig.add_axes([0.91, 0.819, 0.02, 0.06])
     cbar3 = fig.colorbar(h3, cax=cbar_ax3)
     cbar3.set_label('Direction',fontdict={'fontsize':labelfontsz})
     cbar3.set_ticks([0,90,180,270,360])
     cbar3.set_ticklabels(['N','E','S','W','N'])
 
-    axx[6].plot(maximet.index,maximet.Temperature,'xkcd:red')
-    axx[6].set_ylabel('Air Temp ($^\circ$C)',color='xkcd:red',fontdict={'fontsize':labelfontsz})
-    axx[6].set_title('Air Temperature (MaxiMet)')
-    axx[6].set_yticks([-30,-20,-10,0])
-
-    axx[5].plot(maximet.index,maximet.AH,'grey')
-    axx[5].set_ylabel("AH (g/kg)",color='grey',fontdict={'fontsize':labelfontsz})
-    axx[5].set_title('Humidity (MaxiMet)')
-
-    par1 = axx[5].twinx()
+    axx[1].plot(maximet.index,maximet.AH,'grey')
+    axx[1].set_ylabel("AH (g/kg)",color='grey',fontdict={'fontsize':labelfontsz})
+    axx[1].set_title('Humidity (MaxiMet)')
+    par1 = axx[1].twinx()
     par1.plot(maximet.index,maximet.RH,'darkorchid',alpha=0.8)
     par1.set_ylabel('RH (%)',color='darkorchid',fontdict={'fontsize':labelfontsz})
     #par1.set_ylim([50, 100])
 
-    axx[3].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[3].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[3].legend(['Ice','Snow'],loc=2)
-    axx[3].set_ylim([-0.4, 0.6])
-    axx[3].invert_yaxis()
-    axx[3].set_ylabel('(m)',fontdict={'fontsize':labelfontsz})
-    axx[3].set_title('Ice & Snow Depth (Local Observer)')
+    axx[2].plot(maximet.index,maximet.Temperature,'xkcd:red')
+    axx[2].set_ylabel('Air Temp ($^\circ$C)',color='xkcd:red',fontdict={'fontsize':labelfontsz})
+    axx[2].set_title('Air Temperature (MaxiMet)')
+    axx[2].set_yticks([-30,-20,-10,0])
 
-    axx[7].plot(fws_rsmpl.index,fws_rsmpl.Rs,'brown',alpha=0.5)
-    axx[7].plot(fws_rsmpl.index,fws_rsmpl.Rl_corr,'teal')
-    axx[7].plot(maximet.index,maximet.SolarRad,'goldenrod')
-    axx[7].legend(['SW K&Z','LW K&Z','SW Maximet'])
-    axx[7].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz})
-    axx[7].set_title('Down-welling Radiation (MaxiMet & FWS Kipp&Zonen)')
+    axx[3].plot(fws_rsmpl.index,fws_rsmpl.Rs,'brown',alpha=0.5)
+    axx[3].plot(fws_rsmpl.index,fws_rsmpl.Rl_corr,'teal')
+    axx[3].plot(maximet.index,maximet.SolarRad,'goldenrod')
+    axx[3].legend(['SW K&Z','LW K&Z','SW Maximet'])
+    axx[3].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz})
+    axx[3].set_title('Down-welling Radiation (MaxiMet & FWS Kipp&Zonen)')
 
-    hnSW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
-    hnLW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
-    axx[8].legend(['Net SW','Net LW'])
-    axx[8].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz});
-    axx[8].set_title('Net Radiation (CNR2)')
-    axx[8].set_yticks([-100,0,100,200])
+    hnSW = axx[4].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
+    hnLW = axx[4].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
+    axx[4].legend(['Net SW','Net LW'])
+    axx[4].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz});
+    axx[4].set_title('Net Radiation (CNR2)')
+    axx[4].set_yticks([-100,0,100,200])
 
     start_alb = pd.datetime(2019,1,8,0,0,0)
     mm_sw = maximet.loc[start_alb:end].SolarRad
@@ -126,15 +84,58 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     albedo = 1 - absorptivity
     albedo = albedo.rolling(3).mean()
 
-    axx[9].plot(albedo.index,albedo.values,'navy')
-    axx[9].set_ylabel('Albedo',color='navy',fontdict={'fontsize':labelfontsz});
-    axx[9].set_title('Albedo (MaxiMet & CNR2)')
-    #axx[9].set_title('Temperature at Snow/Ice Interface')
-    #axx[9].plot(tt.index,tt.Temp)
+    axx[5].plot(albedo.index,albedo.values,'navy')
+    axx[5].set_ylabel('Albedo',color='navy',fontdict={'fontsize':labelfontsz});
+    axx[5].set_title('Albedo (MaxiMet & CNR2)')
 
+    axx[6].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[6].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[6].legend(['Snow','Ice'],loc=2)
+    axx[6].set_ylim([-0.4, 0.6])
+    axx[6].invert_yaxis()
+    axx[6].set_ylabel('(m)',fontdict={'fontsize':labelfontsz})
+    axx[6].set_title('Ice & Snow Depth (Local Observer)')
+
+    h1 = axx[7].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr_r')
+    axx[7].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[7].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[7].set_xlim([start, end])
+    axx[7].set_ylim([-0.5,6])
+    axx[7].invert_yaxis()
+    axx[7].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
+    axx[7].set_title('Current Speed & Direction [Blue=Northwards, Red=Southwards] (Aquadopp)')
+    fig.subplots_adjust(right=0.9)
+    cbar_ax1 = fig.add_axes([0.91, 0.28, 0.02, 0.06])
+    cbar1 = fig.colorbar(h1, cax=cbar_ax1)
+    cbar1.set_label('Speed (m/s)',fontdict={'fontsize':labelfontsz})
+
+    h2 = axx[8].pcolormesh(tempsXrInterp.time,tempsXrInterp.depth,tempsXrInterp.values,cmap=cc.cm.rainbow,vmin=-1.7,vmax=0)
+    axx[8].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[8].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[8].set_ylim(ylims)
+    axx[8].set_yticks([0,6,12])
+    axx[8].invert_yaxis()
+    axx[8].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
+    axx[8].set_title('Water Temperature Profile (SBE39s & RBR Concerto)')
+    cbar_ax2 = fig.add_axes([0.91, 0.203, 0.02, 0.06])
+    cbar2 = fig.colorbar(h2, cax=cbar_ax2)
+    cbar2.set_label('Temp ($^\circ$C)',fontdict={'fontsize':labelfontsz})
+    cbar2.set_ticks([-1.5,-1,-0.5,0])
+
+    axx[9].plot(rbr.index,rbr.Temperature,'orangered')
+    axx[9].set_ylabel('Temp ($^\circ$C)',color='orangered',fontdict={'fontsize':labelfontsz})
+    axx[9].set_ylim([-1.7,0])
+    axx[9].set_title('Water Temperature & Salinity at 3m Depth (RBR Concerto)')
+    par0 = axx[9].twinx()
+    par0.plot(rbr.index,rbr.Salinity,'xkcd:blue')
+    par0.set_ylabel('Salinity (psu)',color='xkcd:blue',fontdict={'fontsize':labelfontsz})
+
+    # Format x-axis dates
     axx[0].xaxis.set_major_locator(ticker.MultipleLocator(5))
     myFmt = mdates.DateFormatter('%b %d')
     axx[0].xaxis.set_major_formatter(myFmt);
+
+    #add panel labels
 
 #########################################################################################################
 
