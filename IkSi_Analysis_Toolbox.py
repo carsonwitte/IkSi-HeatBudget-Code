@@ -351,7 +351,8 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     mm_crop = maximet.loc[start2:end2]
     cnr_crop = cnr_rsmpl.loc[start2:end2].drop(columns=['RECORD','NetSW_Avg','NetLW_Avg','NetRad_Avg','NetRad','PTemp_C','BattV'])
     mbs_crop = mbs_mean.dropna().resample('10min').mean().interpolate().loc[start2:end2]
-    Fw_crop = Fw_92.to_pandas().resample('10min').mean().interpolate().loc[start2:end2]
+    #Fw_crop = Fw_92.to_pandas().resample('10min').mean().interpolate().loc[start2:end2]
+    Fw_crop = Fw_92.resample('10min').mean().interpolate().loc[start2:end2]
 
     #----------------UPPER BOUNDARY--------------------
     #constants
@@ -365,7 +366,7 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     Ta = mm_crop.Temperature + 273.15
     Uz = mm_crop.Speed
     F_lw = -cnr_crop.NetLW #given with + into surface, so have to reverse
-    F_sw = -cnr_crop.NetSW #given with + into surface, so have to reverse
+    F_sw = -cnr_crop.NetSW - 4#given with + into surface, so have to reverse
     Hs = -mbs_crop.SnowMean
     Hi = mbs_crop.IceMean
     Tf = np.zeros(len(mm_crop)) + 273
@@ -391,10 +392,10 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     plt.rcParams['font.size'] = 24
 
     fig,axx = plt.subplots(nrows=2, figsize=(22,14), sharex=True, facecolor='w')
-    axx[0].plot(cnr_crop.index,F_lw.rolling(roll_hrs,center=True).mean(),'g',linewidth=linewd)
-    axx[0].plot(cnr_crop.index,F_sw.rolling(roll_hrs,center=True).mean()-2,color='orange',linewidth=linewd)
-    axx[0].plot(cnr_crop.index,Fs.rolling(6*roll_hrs,center=True).mean(),color='firebrick',linewidth=linewd)
-    axx[0].plot((F_lw+F_sw+Fs).rolling(6*roll_hrs,center=True,min_periods=None).mean(),'k',linestyle='-',linewidth=linewd*2)
+    axx[0].plot(cnr_crop.index,-F_lw.rolling(roll_hrs,center=True).mean(),'g',linewidth=linewd)
+    axx[0].plot(cnr_crop.index,-F_sw.rolling(roll_hrs,center=True).mean()-2,color='orange',linewidth=linewd)
+    axx[0].plot(cnr_crop.index,-Fs.rolling(6*roll_hrs,center=True).mean(),color='firebrick',linewidth=linewd)
+    axx[0].plot(-(F_lw+F_sw+Fs).rolling(6*roll_hrs,center=True,min_periods=None).mean(),'k',linestyle='-',linewidth=linewd*2)
     #axx[0].plot(Fc.rolling(6*roll_hrs,center=True,min_periods=None).mean().where(Fc<0),'purple',linewidth=linewd*2)
     axx[0].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
 
@@ -411,9 +412,9 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     l1 = axx[0].legend(['$F_{LW_{net}}$','$F_{SW_{net}}$','$F_{sensible}$','$F_{total}$'],bbox_to_anchor=(1.001,0.83),fontsize=lgndfont)
 
 
-    axx[1].plot(-Fc_plot,'purple',linewidth=linewd*2)
-    axx[1].plot(-scale*Fw_plot,'C0',linewidth=linewd*2)
-    axx[1].plot(-resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1)
+    axx[1].plot(Fc_plot,'purple',linewidth=linewd*2)
+    axx[1].plot(scale*Fw_plot,'C0',linewidth=linewd*2)
+    axx[1].plot(resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1,linewidth=linewd*2)
     axx[1].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
     axx[1].set_ylim([-100,100])
     l2 = axx[1].legend(['$F_{conductive}$','$F_{water}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
@@ -423,7 +424,11 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     axx[1].xaxis.set_major_locator(ticker.MultipleLocator(8))
     axx[1].xaxis.set_major_formatter(myFmt);
 
-    plt.savefig('Figures/Flux Balances v1.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
+    plt.text(x=0,y=1.02,s='(a)',transform=axx[0].transAxes,fontsize=26)
+    plt.text(x=0,y=1.02,s='(b)',transform=axx[1].transAxes,fontsize=26)
+
+    plt.savefig('Figures/Flux Balances v4.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
+    return scale
 
 #########################################################################################################
 
