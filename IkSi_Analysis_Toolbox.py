@@ -103,7 +103,7 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     axx[7].set_ylim([-0.5,6])
     axx[7].invert_yaxis()
     axx[7].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[7].set_title('Current Speed & Direction [Blue=Northwards, Red=Southwards] (Aquadopp)')
+    axx[7].set_title('Current Speed & Direction [Blue=Northeast, Red=Southwest] (Aquadopp)')
     fig.subplots_adjust(right=0.9)
     cbar_ax1 = fig.add_axes([0.91, 0.28, 0.02, 0.06])
     cbar1 = fig.colorbar(h1, cax=cbar_ax1)
@@ -136,6 +136,20 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     axx[0].xaxis.set_major_formatter(myFmt);
 
     #add panel labels
+    label_x = 0.001
+    label_y = 1.05
+    fontsz = 17
+
+    plt.text(x=label_x,y=label_y,s='(a)',transform=axx[0].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(b)',transform=axx[1].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(c)',transform=axx[2].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(d)',transform=axx[3].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(e)',transform=axx[4].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(f)',transform=axx[5].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(g)',transform=axx[6].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(h)',transform=axx[7].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(i)',transform=axx[8].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(j)',transform=axx[9].transAxes,fontsize=fontsz)
 
 #########################################################################################################
 
@@ -745,83 +759,179 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
     '''
     '''
     #---subset to date range-----
-    sbe1 = sbeOBT18.loc[start1:end1]
-    sbe2 = sbeOBT.loc[start2:end2]
+    sbefall1 = sbeOBT18.loc[startfall1:endfall1]
+    sbefall2 = sbeOBT.loc[startfall2:endfall2]
+    sbespring1 = sbeOBT18.loc[startspring1:endspring1]
+    sbespring2 = sbeOBT.loc[startspring2:endspring2]
 
     #---intiialize x-ticks------
-    xticks17 = pd.date_range(start1, end1, periods=nticks+2)[1:-1]
-    xticks18 = pd.date_range(start2, end2, periods=nticks+2)[1:-1]
+    xticksfall1 = pd.date_range(startfall1, endfall1, periods=nticks_fall+2)[1:-1]
+    xticksfall2 = pd.date_range(startfall2, endfall2, periods=nticks_fall+2)[1:-1]
+    xticksspring1 = pd.date_range(startspring1, endspring1, periods=nticks_spring+2)[1:-1]
+    xticksspring2 = pd.date_range(startspring2, endspring2, periods=nticks_spring+2)[1:-1]
     myFmt = mdates.DateFormatter('%b %d')
 
     #------initialize figure--------
-    fig = plt.figure(figsize=(14,8),facecolor='w')
+    fig = plt.figure(figsize=(14,17),facecolor='w')
     plt.rcParams['font.size'] = 16
+    fig.suptitle('Temperature vs. Salinity at the Ocean Bottom Tripod',y=0.92,fontsize=22);
+
+    #------------------------------------------------------------------------------------------------
+    #                                  FALL
+    #------------------------------------------------------------------------------------------------
 
     #------Fall 2017 Timeseries-----
-    ax1 = plt.subplot2grid((64,6),(0,0),rowspan=27,colspan=4)
-    ax1.plot(sbe1.sal,'mediumblue')
-    ax1.set_xlim([start1,end1])
-    ax1.set_ylim(sal_lims)
-    ax1.set_ylabel('Salinity (psu)',color='mediumblue')
+    ax1 = plt.subplot2grid((132,6),(0,0),rowspan=27,colspan=4)
+    ax1.plot(sbefall1.sal,'mediumblue')
+    ax1.set_xlim([startfall1,endfall1])
+    ax1.set_ylim(sal_lims_fall)
+    ax1.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    ax1.set_yticks([28,30,32])
+    ax1.set_yticklabels([28,30,32],color='mediumblue')
     ax1.set_title('Fall 2017')
     par1 = ax1.twinx()
-    par1.plot(sbe1.temp,'darkred')
-    par1.set_ylim(temp_lims)
+    par1.plot(sbefall1.temp,'darkred')
+    par1.set_ylim(temp_lims_fall)
     par1.set_yticklabels([])
-    par1.set_yticks(temp_ticks)
+    par1.set_yticks(temp_ticks_fall)
     par1.set_ylabel('($^{\circ} C$)',color='darkred')
 
-    ax1.set_xticks(xticks17)
+    ax1.set_xticks(xticksfall1)
     ax1.set_xticklabels([''])
 
     #------Fall 2017 TS Diagram-----
-    ax11 = plt.subplot2grid((64,24),(0,17),rowspan=27,colspan=6)
-    h2 = plot_ts_diagram(sbe1.temp,sbe1.sal,temp_lims,sal_lims,ax11)
-    ax11.set_yticks(temp_ticks)
-    ax11.set_yticklabels(temp_tick_labels,color='darkred')
+    ax11 = plt.subplot2grid((132,24),(0,17),rowspan=27,colspan=6)
+    h2 = plot_ts_diagram(sbefall1.temp,sbefall1.sal,temp_lims_fall,sal_lims_fall,ax11)
+    ax11.set_yticks(temp_ticks_fall)
+    ax11.set_yticklabels(temp_tick_labels_fall,color='darkred')
+    ax11.set_xticks([28,30,32])
+    ax11.set_xticklabels([28,30,32],color='mediumblue')
 
     #-----Fall 2018 Timeseries------
-    ax2 = plt.subplot2grid((64,6),(32,0),rowspan=27,colspan=4,facecolor='none')
+    ax2 = plt.subplot2grid((132,6),(32,0),rowspan=27,colspan=4,facecolor='none')
     ax2.set_title('Fall 2018')
     ax2.set_yticks([])
-    ax2.set_xlim([start2,end2])
+    ax2.set_xlim([startfall2,endfall2])
     ax2.set_zorder(1)
-
-
+    ax2.set_xticks([])
 
     par21 = ax2.twinx()
-    par21.plot(sbe2.sal,'mediumblue')
-    par21.set_ylim(sal_lims)
+    par21.plot(sbefall2.sal,'mediumblue')
+    par21.set_ylim(sal_lims_fall)
     par21.yaxis.tick_left()
     par21.yaxis.set_label_position('left')
-    par21.set_ylabel('Salinity (psu)',color='mediumblue')
-
+    par21.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    par21.set_yticks([28,30,32])
+    par21.set_yticklabels([28,30,32],color='mediumblue')
 
     par2 = ax2.twinx()
-    par2.plot(sbe2.temp,'darkred')
+    par2.plot(sbefall2.temp,'darkred')
     #par2.set_xlim([start2,end2])
-    par2.set_ylim(temp_lims)
-    par2.set_yticks(temp_ticks)
+    par2.set_ylim(temp_lims_fall)
+    par2.set_yticks(temp_ticks_fall)
     par2.set_yticklabels([])
     par2.set_ylabel('($^{\circ} C$)',color='darkred')
 
     par2.set_zorder(1)
 
     par2.xaxis.set_major_formatter(myFmt);
-    par2.set_xticks(xticks18)
+    par2.set_xticks(xticksfall2)
 
     #-----Fall 2018 TS Diagram-------
-    ax21 = plt.subplot2grid((64,24),(32,17),rowspan=27,colspan=6)
-    chandle = plot_ts_diagram(sbe2.temp,sbe2.sal,temp_lims,sal_lims,ax21)
-    ax21.set_xlabel('Salinity (psu)',color='mediumblue')
-    ax21.set_yticks(temp_ticks)
-    ax21.set_yticklabels(temp_tick_labels,color='darkred')
+    ax21 = plt.subplot2grid((132,24),(32,17),rowspan=27,colspan=6)
+    chandle = plot_ts_diagram(sbefall2.temp,sbefall2.sal,temp_lims_fall,sal_lims_fall,ax21)
+    ax21.set_xlabel('Salinity $(psu)$',color='mediumblue')
+    ax21.set_xticks([28,30,32])
+    ax21.set_xticklabels([28,30,32],color='mediumblue')
+    ax21.set_yticks(temp_ticks_fall)
+    ax21.set_yticklabels(temp_tick_labels_fall,color='darkred')
 
-    cax21 = plt.subplot2grid((50,6),(46,0),rowspan=3,colspan=4)
+    cax21 = plt.subplot2grid((528,6),(236,0),rowspan=14,colspan=4)
     cbar2 = fig.colorbar(chandle, orientation='horizontal',cax=cax21,ticks=[])
     cax21.set_zorder(0)
 
-    fig.suptitle('Temperature vs. Salinity at OBT: Fall',y=0.96,fontsize=22);
+    #------------------------------------------------------------------------------------------------
+    #                                  SPRING
+    #------------------------------------------------------------------------------------------------
+
+    #------Spring 2018 Timeseries-----
+    ax3 = plt.subplot2grid((264,6),(139,0),rowspan=27*2,colspan=4)
+    ax3.plot(sbespring1.sal,'mediumblue')
+    ax3.set_xlim([startspring1,endspring1])
+    ax3.set_ylim(sal_lims_spring)
+    ax3.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    ax3.set_yticks([30,31,32,33])
+    ax3.set_yticklabels([30,31,32,33],color='mediumblue')
+    ax3.set_title('Spring 2018')
+    par3 = ax3.twinx()
+    par3.plot(sbespring1.temp,'darkred')
+    par3.set_ylim(temp_lims_spring)
+    par3.set_yticklabels([])
+    par3.set_yticks(temp_ticks_spring)
+    par3.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    ax3.set_xticks(xticksspring1)
+    ax3.set_xticklabels([''])
+
+    #------spring 2018 TS Diagram-----
+    ax31 = plt.subplot2grid((264,24),(139,17),rowspan=27*2,colspan=6)
+    h2 = plot_ts_diagram(sbespring1.temp,sbespring1.sal,temp_lims_spring,sal_lims_spring,ax31)
+    ax31.set_yticks(temp_ticks_spring)
+    ax31.set_yticklabels(temp_tick_labels_spring,color='darkred')
+    ax31.set_xticks([30,31,32,33])
+    ax31.set_xticklabels([30,31,32,33],color='mediumblue')
+
+    #-----spring 2019 Timeseries------
+    ax4 = plt.subplot2grid((264,6),(203,0),rowspan=27*2,colspan=4,facecolor='none')
+    ax4.set_title('Spring 2019')
+    ax4.set_yticks([])
+    ax4.set_xlim([startspring2,endspring2])
+    ax4.set_zorder(1)
+    ax4.set_xticks([])
+
+    par21 = ax4.twinx()
+    par21.plot(sbespring2.sal,'mediumblue')
+    par21.set_ylim(sal_lims_spring)
+    par21.yaxis.tick_left()
+    par21.yaxis.set_label_position('left')
+    par21.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    par21.set_yticks([30,31,32,33])
+    par21.set_yticklabels([30,31,32,33],color='mediumblue')
+
+    par2 = ax4.twinx()
+    par2.plot(sbespring2.temp,'darkred')
+    #par2.set_xlim([start2,end2])
+    par2.set_ylim(temp_lims_spring)
+    par2.set_yticks(temp_ticks_spring)
+    par2.set_yticklabels([])
+    par2.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    par2.set_zorder(1)
+
+    par2.xaxis.set_major_formatter(myFmt);
+    par2.set_xticks(xticksspring2)
+
+    #-----spring 2019 TS Diagram-------
+    ax41 = plt.subplot2grid((264,24),(203,17),rowspan=27*2,colspan=6)
+    chandle = plot_ts_diagram(sbespring2.temp,sbespring2.sal,temp_lims_spring,sal_lims_spring,ax41)
+    ax41.set_xlabel('Salinity $(psu)$',color='mediumblue')
+    ax41.set_yticks(temp_ticks_spring)
+    ax41.set_yticklabels(temp_tick_labels_spring,color='darkred')
+    ax41.set_xticks([30,31,32,33])
+    ax41.set_xticklabels([30,31,32,33],color='mediumblue')
+
+    cax41 = plt.subplot2grid((264,6),(257,0),rowspan=7,colspan=4)
+    cbar2 = fig.colorbar(chandle, orientation='horizontal',cax=cax41,ticks=[])
+    cax41.set_zorder(0)
+
+    #------------Label panels-------------------------
+    label_x = 0.01
+    label_y = 1.03
+    fontsz = 18
+    plt.text(x=label_x,y=label_y,s='(a)',transform=ax1.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(b)',transform=ax2.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(c)',transform=ax3.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(d)',transform=ax4.transAxes,fontsize=fontsz)
 
 #########################################################################################################
 
@@ -878,7 +988,7 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     h0 = ax1.plot(salt_fall,temp_fall,'C1')
     h1 = ax1.plot(salt_spring,temp_spring,'C2')
     #h2 = ax1.scatter(salt,temp,c=sbe.index,s=1,cmap=cc.cm.rainbow)
-    ax1.set_xlabel('Salinity (psu)')
+    ax1.set_xlabel('Salinity $(psu)$')
     ax1.set_ylabel('Temperature ($^\circ C$)');
 
     #----------Colorbar-----------------------
