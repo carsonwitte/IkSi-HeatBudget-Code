@@ -755,7 +755,7 @@ def plot_OBT_sections(sbeOBT18, sbeOBT, start1, end1, start2, end2, sal_lims, te
 
 #########################################################################################################
 
-def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, startfall2, endfall2, sal_lims_fall, temp_lims_fall, temp_ticks_fall, temp_tick_labels_fall, nticks_fall, startspring1, endspring1, startspring2, endspring2, sal_lims_spring, temp_lims_spring, temp_ticks_spring, temp_tick_labels_spring, nticks_spring):
+def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, startfall2, endfall2, sal_lims_fall, temp_lims_fall, temp_ticks_fall, temp_tick_labels_fall, nticks_fall, startspring1, endspring1, startspring2, endspring2, sal_lims_spring, temp_lims_spring, temp_ticks_spring, temp_tick_labels_spring, nticks_spring, mean2DirCurrents):
     '''
     '''
     #---subset to date range-----
@@ -814,6 +814,16 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
     ax2.set_xlim([startfall2,endfall2])
     ax2.set_zorder(1)
     ax2.set_xticks([])
+    
+    par22 = ax2.twinx()
+    par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
+    par22.yaxis.tick_left()
+    par22.yaxis.set_label_position('left')
+    par22.spines['left'].set_position(('axes', -0.12))
+    par22.set_ylim([-0.6,0.6])
+    par22.set_yticks([-0.3,0,0.3])
+    par22.set_yticklabels([-0.3,0,0.3],color='grey')
+    par22.set_ylabel('NW Current Speed (m/s)',color='grey')
 
     par21 = ax2.twinx()
     par21.plot(sbefall2.sal,'mediumblue')
@@ -836,6 +846,8 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
 
     par2.xaxis.set_major_formatter(myFmt);
     par2.set_xticks(xticksfall2)
+    
+    
 
     #-----Fall 2018 TS Diagram-------
     ax21 = plt.subplot2grid((132,24),(32,17),rowspan=27,colspan=6)
@@ -888,6 +900,16 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
     ax4.set_xlim([startspring2,endspring2])
     ax4.set_zorder(1)
     ax4.set_xticks([])
+    
+    par22 = ax4.twinx()
+    par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
+    par22.yaxis.tick_left()
+    par22.yaxis.set_label_position('left')
+    par22.spines['left'].set_position(('axes', -0.12))
+    par22.set_ylim([-0.6,0.6])
+    par22.set_yticks([-0.3,0,0.3])
+    par22.set_yticklabels([-0.3,0,0.3],color='grey')
+    par22.set_ylabel('NW Current Speed (m/s)',color='grey')
 
     par21 = ax4.twinx()
     par21.plot(sbespring2.sal,'mediumblue')

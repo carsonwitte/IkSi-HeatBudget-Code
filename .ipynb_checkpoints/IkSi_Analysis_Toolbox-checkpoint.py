@@ -36,84 +36,42 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
 
     labelfontsz=20
     ylims=[-0.5, 12]
-    h1 = axx[0].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr_r')
-    axx[0].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[0].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[0].set_xlim([start, end])
-    axx[0].set_ylim([-0.5,6])
-    axx[0].invert_yaxis()
-    axx[0].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[0].set_title('Current Speed & Direction [Blue=Northwards, Red=Southwards] (Aquadopp)')
-    fig.subplots_adjust(right=0.9)
-    cbar_ax1 = fig.add_axes([0.91, 0.819, 0.02, 0.06])
-    cbar1 = fig.colorbar(h1, cax=cbar_ax1)
-    cbar1.set_label('Speed (m/s)',fontdict={'fontsize':labelfontsz})
 
-    h2 = axx[1].pcolormesh(tempsXrInterp.time,tempsXrInterp.depth,tempsXrInterp.values,cmap=cc.cm.rainbow,vmin=-1.7,vmax=0)
-    axx[1].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[1].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[1].set_ylim(ylims)
-    axx[1].set_yticks([0,6,12])
-    axx[1].invert_yaxis()
-    axx[1].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
-    axx[1].set_title('Water Temperature Profile (SBE39s & RBR Concerto)')
-    cbar_ax2 = fig.add_axes([0.91, 0.7415, 0.02, 0.06])
-    cbar2 = fig.colorbar(h2, cax=cbar_ax2)
-    cbar2.set_label('Temp ($^\circ$C)',fontdict={'fontsize':labelfontsz})
-    cbar2.set_ticks([-1.5,-1,-0.5,0])
-
-    axx[4].plot(rbr.index,rbr.Temperature,'orangered')
-    axx[4].set_ylabel('Temp ($^\circ$C)',color='orangered',fontdict={'fontsize':labelfontsz})
-    axx[4].set_ylim([-1.7,0])
-    axx[4].set_title('Water Temperature & Salinity at 3m Depth (RBR Concerto)')
-    par0 = axx[4].twinx()
-    par0.plot(rbr.index,rbr.Salinity,'xkcd:blue')
-    par0.set_ylabel('Salinity (psu)',color='xkcd:blue',fontdict={'fontsize':labelfontsz})
-
-    h3 = axx[2].scatter(maximet.index,maximet.Speed,c=maximet.Direction,s=3,cmap='twilight_shifted')
-    axx[2].set_ylabel('Speed (m/s)',fontdict={'fontsize':labelfontsz})
-    axx[2].set_title('Wind Speed & Direction (MaxiMet)')
-    cbar_ax3 = fig.add_axes([0.91, 0.665, 0.02, 0.06])
+    h3 = axx[0].scatter(maximet.index,maximet.Speed,c=maximet.Direction,s=3,cmap='twilight_shifted')
+    axx[0].set_ylabel('Speed (m/s)',fontdict={'fontsize':labelfontsz})
+    axx[0].set_title('Wind Speed & Direction (MaxiMet)')
+    cbar_ax3 = fig.add_axes([0.91, 0.819, 0.02, 0.06])
     cbar3 = fig.colorbar(h3, cax=cbar_ax3)
     cbar3.set_label('Direction',fontdict={'fontsize':labelfontsz})
     cbar3.set_ticks([0,90,180,270,360])
     cbar3.set_ticklabels(['N','E','S','W','N'])
 
-    axx[6].plot(maximet.index,maximet.Temperature,'xkcd:red')
-    axx[6].set_ylabel('Air Temp ($^\circ$C)',color='xkcd:red',fontdict={'fontsize':labelfontsz})
-    axx[6].set_title('Air Temperature (MaxiMet)')
-    axx[6].set_yticks([-30,-20,-10,0])
-
-    axx[5].plot(maximet.index,maximet.AH,'grey')
-    axx[5].set_ylabel("AH (g/kg)",color='grey',fontdict={'fontsize':labelfontsz})
-    axx[5].set_title('Humidity (MaxiMet)')
-
-    par1 = axx[5].twinx()
+    axx[1].plot(maximet.index,maximet.AH,'grey')
+    axx[1].set_ylabel("AH (g/kg)",color='grey',fontdict={'fontsize':labelfontsz})
+    axx[1].set_title('Humidity (MaxiMet)')
+    par1 = axx[1].twinx()
     par1.plot(maximet.index,maximet.RH,'darkorchid',alpha=0.8)
     par1.set_ylabel('RH (%)',color='darkorchid',fontdict={'fontsize':labelfontsz})
     #par1.set_ylim([50, 100])
 
-    axx[3].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
-    axx[3].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
-    axx[3].legend(['Ice','Snow'],loc=2)
-    axx[3].set_ylim([-0.4, 0.6])
-    axx[3].invert_yaxis()
-    axx[3].set_ylabel('(m)',fontdict={'fontsize':labelfontsz})
-    axx[3].set_title('Ice & Snow Depth (Local Observer)')
+    axx[2].plot(maximet.index,maximet.Temperature,'xkcd:red')
+    axx[2].set_ylabel('Air Temp ($^\circ$C)',color='xkcd:red',fontdict={'fontsize':labelfontsz})
+    axx[2].set_title('Air Temperature (MaxiMet)')
+    axx[2].set_yticks([-30,-20,-10,0])
 
-    axx[7].plot(fws_rsmpl.index,fws_rsmpl.Rs,'brown',alpha=0.5)
-    axx[7].plot(fws_rsmpl.index,fws_rsmpl.Rl_corr,'teal')
-    axx[7].plot(maximet.index,maximet.SolarRad,'goldenrod')
-    axx[7].legend(['SW K&Z','LW K&Z','SW Maximet'])
-    axx[7].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz})
-    axx[7].set_title('Down-welling Radiation (MaxiMet & FWS Kipp&Zonen)')
+    axx[3].plot(fws_rsmpl.index,fws_rsmpl.Rs,'brown',alpha=0.5)
+    axx[3].plot(fws_rsmpl.index,fws_rsmpl.Rl_corr,'teal')
+    axx[3].plot(maximet.index,maximet.SolarRad,'goldenrod')
+    axx[3].legend(['SW K&Z','LW K&Z','SW Maximet'])
+    axx[3].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz})
+    axx[3].set_title('Down-welling Radiation (MaxiMet & FWS Kipp&Zonen)')
 
-    hnSW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
-    hnLW = axx[8].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
-    axx[8].legend(['Net SW','Net LW'])
-    axx[8].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz});
-    axx[8].set_title('Net Radiation (CNR2)')
-    axx[8].set_yticks([-100,0,100,200])
+    hnSW = axx[4].plot(cnr_rsmpl.index,cnr_rsmpl.NetSW,'orange')
+    hnLW = axx[4].plot(cnr_rsmpl.index,cnr_rsmpl.NetLW,'forestgreen')
+    axx[4].legend(['Net SW','Net LW'])
+    axx[4].set_ylabel('($W/m^2$)',fontdict={'fontsize':labelfontsz});
+    axx[4].set_title('Net Radiation (CNR2)')
+    axx[4].set_yticks([-100,0,100,200])
 
     start_alb = pd.datetime(2019,1,8,0,0,0)
     mm_sw = maximet.loc[start_alb:end].SolarRad
@@ -126,15 +84,72 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     albedo = 1 - absorptivity
     albedo = albedo.rolling(3).mean()
 
-    axx[9].plot(albedo.index,albedo.values,'navy')
-    axx[9].set_ylabel('Albedo',color='navy',fontdict={'fontsize':labelfontsz});
-    axx[9].set_title('Albedo (MaxiMet & CNR2)')
-    #axx[9].set_title('Temperature at Snow/Ice Interface')
-    #axx[9].plot(tt.index,tt.Temp)
+    axx[5].plot(albedo.index,albedo.values,'navy')
+    axx[5].set_ylabel('Albedo',color='navy',fontdict={'fontsize':labelfontsz});
+    axx[5].set_title('Albedo (MaxiMet & CNR2)')
 
+    axx[6].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[6].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[6].legend(['Snow','Ice'],loc=2)
+    axx[6].set_ylim([-0.4, 0.6])
+    axx[6].invert_yaxis()
+    axx[6].set_ylabel('(m)',fontdict={'fontsize':labelfontsz})
+    axx[6].set_title('Ice & Snow Depth (Local Observer)')
+
+    h1 = axx[7].pcolormesh(aqd2dir.time,aqd2dir.bindepth,aqd2dir.speed,vmin=-1.3,vmax=1.3,cmap='bwr_r')
+    axx[7].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[7].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[7].set_xlim([start, end])
+    axx[7].set_ylim([-0.5,6])
+    axx[7].invert_yaxis()
+    axx[7].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
+    axx[7].set_title('Current Speed & Direction [Blue=Northeast, Red=Southwest] (Aquadopp)')
+    fig.subplots_adjust(right=0.9)
+    cbar_ax1 = fig.add_axes([0.91, 0.28, 0.02, 0.06])
+    cbar1 = fig.colorbar(h1, cax=cbar_ax1)
+    cbar1.set_label('Speed (m/s)',fontdict={'fontsize':labelfontsz})
+
+    h2 = axx[8].pcolormesh(tempsXrInterp.time,tempsXrInterp.depth,tempsXrInterp.values,cmap=cc.cm.rainbow,vmin=-1.7,vmax=0)
+    axx[8].fill_between(mbs_mean.index,mbs_mean.IceMean,color='k')
+    axx[8].fill_between(mbs_mean.index,mbs_mean.SnowMean,color='gray')
+    axx[8].set_ylim(ylims)
+    axx[8].set_yticks([0,6,12])
+    axx[8].invert_yaxis()
+    axx[8].set_ylabel('Depth (m)',fontdict={'fontsize':labelfontsz})
+    axx[8].set_title('Water Temperature Profile (SBE39s & RBR Concerto)')
+    cbar_ax2 = fig.add_axes([0.91, 0.203, 0.02, 0.06])
+    cbar2 = fig.colorbar(h2, cax=cbar_ax2)
+    cbar2.set_label('Temp ($^\circ$C)',fontdict={'fontsize':labelfontsz})
+    cbar2.set_ticks([-1.5,-1,-0.5,0])
+
+    axx[9].plot(rbr.index,rbr.Temperature,'orangered')
+    axx[9].set_ylabel('Temp ($^\circ$C)',color='orangered',fontdict={'fontsize':labelfontsz})
+    axx[9].set_ylim([-1.7,0])
+    axx[9].set_title('Water Temperature & Salinity at 3m Depth (RBR Concerto)')
+    par0 = axx[9].twinx()
+    par0.plot(rbr.index,rbr.Salinity,'xkcd:blue')
+    par0.set_ylabel('Salinity (psu)',color='xkcd:blue',fontdict={'fontsize':labelfontsz})
+
+    # Format x-axis dates
     axx[0].xaxis.set_major_locator(ticker.MultipleLocator(5))
     myFmt = mdates.DateFormatter('%b %d')
     axx[0].xaxis.set_major_formatter(myFmt);
+
+    #add panel labels
+    label_x = 0.001
+    label_y = 1.05
+    fontsz = 17
+
+    plt.text(x=label_x,y=label_y,s='(a)',transform=axx[0].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(b)',transform=axx[1].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(c)',transform=axx[2].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(d)',transform=axx[3].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(e)',transform=axx[4].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(f)',transform=axx[5].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(g)',transform=axx[6].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(h)',transform=axx[7].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(i)',transform=axx[8].transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(j)',transform=axx[9].transAxes,fontsize=fontsz)
 
 #########################################################################################################
 
@@ -250,6 +265,7 @@ def calculate_deltaT(rbr, tempsXrInterp):
     adjusted_deg_above_freezing = subice_temp - adjusted_freezing_point
 
     rbr['Salinity_Adjusted'] = adjusted_salinities
+    rbr['freezing_point_Adjusted'] = adjusted_freezing_point
     rbr['deltaT_Adjusted'] = adjusted_deg_above_freezing
     rbr['subice_temp'] = subice_temp
 
@@ -350,7 +366,8 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     mm_crop = maximet.loc[start2:end2]
     cnr_crop = cnr_rsmpl.loc[start2:end2].drop(columns=['RECORD','NetSW_Avg','NetLW_Avg','NetRad_Avg','NetRad','PTemp_C','BattV'])
     mbs_crop = mbs_mean.dropna().resample('10min').mean().interpolate().loc[start2:end2]
-    Fw_crop = Fw_92.to_pandas().resample('10min').mean().interpolate().loc[start2:end2]
+    #Fw_crop = Fw_92.to_pandas().resample('10min').mean().interpolate().loc[start2:end2]
+    Fw_crop = Fw_92.resample('10min').mean().interpolate().loc[start2:end2]
 
     #----------------UPPER BOUNDARY--------------------
     #constants
@@ -364,7 +381,7 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     Ta = mm_crop.Temperature + 273.15
     Uz = mm_crop.Speed
     F_lw = -cnr_crop.NetLW #given with + into surface, so have to reverse
-    F_sw = -cnr_crop.NetSW #given with + into surface, so have to reverse
+    F_sw = -cnr_crop.NetSW - 4#given with + into surface, so have to reverse
     Hs = -mbs_crop.SnowMean
     Hi = mbs_crop.IceMean
     Tf = np.zeros(len(mm_crop)) + 273
@@ -390,10 +407,10 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     plt.rcParams['font.size'] = 24
 
     fig,axx = plt.subplots(nrows=2, figsize=(22,14), sharex=True, facecolor='w')
-    axx[0].plot(cnr_crop.index,F_lw.rolling(roll_hrs,center=True).mean(),'g',linewidth=linewd)
-    axx[0].plot(cnr_crop.index,F_sw.rolling(roll_hrs,center=True).mean()-2,color='orange',linewidth=linewd)
-    axx[0].plot(cnr_crop.index,Fs.rolling(6*roll_hrs,center=True).mean(),color='firebrick',linewidth=linewd)
-    axx[0].plot((F_lw+F_sw+Fs).rolling(6*roll_hrs,center=True,min_periods=None).mean(),'k',linestyle='-',linewidth=linewd*2)
+    axx[0].plot(cnr_crop.index,-F_lw.rolling(roll_hrs,center=True).mean(),'g',linewidth=linewd)
+    axx[0].plot(cnr_crop.index,-F_sw.rolling(roll_hrs,center=True).mean()-2,color='orange',linewidth=linewd)
+    axx[0].plot(cnr_crop.index,-Fs.rolling(6*roll_hrs,center=True).mean(),color='firebrick',linewidth=linewd)
+    axx[0].plot(-(F_lw+F_sw+Fs).rolling(6*roll_hrs,center=True,min_periods=None).mean(),'k',linestyle='-',linewidth=linewd*2)
     #axx[0].plot(Fc.rolling(6*roll_hrs,center=True,min_periods=None).mean().where(Fc<0),'purple',linewidth=linewd*2)
     axx[0].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
 
@@ -410,9 +427,9 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     l1 = axx[0].legend(['$F_{LW_{net}}$','$F_{SW_{net}}$','$F_{sensible}$','$F_{total}$'],bbox_to_anchor=(1.001,0.83),fontsize=lgndfont)
 
 
-    axx[1].plot(-Fc_plot,'purple',linewidth=linewd*2)
-    axx[1].plot(-scale*Fw_plot,'C0',linewidth=linewd*2)
-    axx[1].plot(-resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1)
+    axx[1].plot(Fc_plot,'purple',linewidth=linewd*2)
+    axx[1].plot(scale*Fw_plot,'C0',linewidth=linewd*2)
+    axx[1].plot(resid.rolling(1440,center=True,min_periods=2).mean(),linestyle='--',color='gray',zorder=1,linewidth=linewd*2)
     axx[1].plot(rbr_rsmpl.index,np.zeros(len(rbr_rsmpl.index)),'k',linewidth=linewd*2/3,zorder=0)
     axx[1].set_ylim([-100,100])
     l2 = axx[1].legend(['$F_{conductive}$','$F_{water}$','Residual'],bbox_to_anchor=(1.001,0.75),fontsize=lgndfont)
@@ -422,7 +439,11 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     axx[1].xaxis.set_major_locator(ticker.MultipleLocator(8))
     axx[1].xaxis.set_major_formatter(myFmt);
 
-    plt.savefig('Figures/Flux Balances v1.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
+    plt.text(x=0,y=1.02,s='(a)',transform=axx[0].transAxes,fontsize=26)
+    plt.text(x=0,y=1.02,s='(b)',transform=axx[1].transAxes,fontsize=26)
+
+    plt.savefig('Figures/Flux Balances v4.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
+    return scale
 
 #########################################################################################################
 
@@ -734,87 +755,205 @@ def plot_OBT_sections(sbeOBT18, sbeOBT, start1, end1, start2, end2, sal_lims, te
 
 #########################################################################################################
 
-def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, startfall2, endfall2, sal_lims_fall, temp_lims_fall, temp_ticks_fall, temp_tick_labels_fall, nticks_fall, startspring1, endspring1, startspring2, endspring2, sal_lims_spring, temp_lims_spring, temp_ticks_spring, temp_tick_labels_spring, nticks_spring):
+def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, startfall2, endfall2, sal_lims_fall, temp_lims_fall, temp_ticks_fall, temp_tick_labels_fall, nticks_fall, startspring1, endspring1, startspring2, endspring2, sal_lims_spring, temp_lims_spring, temp_ticks_spring, temp_tick_labels_spring, nticks_spring, mean2DirCurrents):
     '''
     '''
     #---subset to date range-----
-    sbe1 = sbeOBT18.loc[start1:end1]
-    sbe2 = sbeOBT.loc[start2:end2]
+    sbefall1 = sbeOBT18.loc[startfall1:endfall1]
+    sbefall2 = sbeOBT.loc[startfall2:endfall2]
+    sbespring1 = sbeOBT18.loc[startspring1:endspring1]
+    sbespring2 = sbeOBT.loc[startspring2:endspring2]
 
     #---intiialize x-ticks------
-    xticks17 = pd.date_range(start1, end1, periods=nticks+2)[1:-1]
-    xticks18 = pd.date_range(start2, end2, periods=nticks+2)[1:-1]
+    xticksfall1 = pd.date_range(startfall1, endfall1, periods=nticks_fall+2)[1:-1]
+    xticksfall2 = pd.date_range(startfall2, endfall2, periods=nticks_fall+2)[1:-1]
+    xticksspring1 = pd.date_range(startspring1, endspring1, periods=nticks_spring+2)[1:-1]
+    xticksspring2 = pd.date_range(startspring2, endspring2, periods=nticks_spring+2)[1:-1]
     myFmt = mdates.DateFormatter('%b %d')
 
     #------initialize figure--------
-    fig = plt.figure(figsize=(14,8),facecolor='w')
+    fig = plt.figure(figsize=(14,17),facecolor='w')
     plt.rcParams['font.size'] = 16
+    fig.suptitle('Temperature vs. Salinity at the Ocean Bottom Tripod',y=0.92,fontsize=22);
+
+    #------------------------------------------------------------------------------------------------
+    #                                  FALL
+    #------------------------------------------------------------------------------------------------
 
     #------Fall 2017 Timeseries-----
-    ax1 = plt.subplot2grid((64,6),(0,0),rowspan=27,colspan=4)
-    ax1.plot(sbe1.sal,'mediumblue')
-    ax1.set_xlim([start1,end1])
-    ax1.set_ylim(sal_lims)
-    ax1.set_ylabel('Salinity (psu)',color='mediumblue')
+    ax1 = plt.subplot2grid((132,6),(0,0),rowspan=27,colspan=4)
+    ax1.plot(sbefall1.sal,'mediumblue')
+    ax1.set_xlim([startfall1,endfall1])
+    ax1.set_ylim(sal_lims_fall)
+    ax1.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    ax1.set_yticks([28,30,32])
+    ax1.set_yticklabels([28,30,32],color='mediumblue')
     ax1.set_title('Fall 2017')
     par1 = ax1.twinx()
-    par1.plot(sbe1.temp,'darkred')
-    par1.set_ylim(temp_lims)
+    par1.plot(sbefall1.temp,'darkred')
+    par1.set_ylim(temp_lims_fall)
     par1.set_yticklabels([])
-    par1.set_yticks(temp_ticks)
+    par1.set_yticks(temp_ticks_fall)
     par1.set_ylabel('($^{\circ} C$)',color='darkred')
 
-    ax1.set_xticks(xticks17)
+    ax1.set_xticks(xticksfall1)
     ax1.set_xticklabels([''])
 
     #------Fall 2017 TS Diagram-----
-    ax11 = plt.subplot2grid((64,24),(0,17),rowspan=27,colspan=6)
-    h2 = plot_ts_diagram(sbe1.temp,sbe1.sal,temp_lims,sal_lims,ax11)
-    ax11.set_yticks(temp_ticks)
-    ax11.set_yticklabels(temp_tick_labels,color='darkred')
+    ax11 = plt.subplot2grid((132,24),(0,17),rowspan=27,colspan=6)
+    h2 = plot_ts_diagram(sbefall1.temp,sbefall1.sal,temp_lims_fall,sal_lims_fall,ax11)
+    ax11.set_yticks(temp_ticks_fall)
+    ax11.set_yticklabels(temp_tick_labels_fall,color='darkred')
+    ax11.set_xticks([28,30,32])
+    ax11.set_xticklabels([28,30,32],color='mediumblue')
 
     #-----Fall 2018 Timeseries------
-    ax2 = plt.subplot2grid((64,6),(32,0),rowspan=27,colspan=4,facecolor='none')
+    ax2 = plt.subplot2grid((132,6),(32,0),rowspan=27,colspan=4,facecolor='none')
     ax2.set_title('Fall 2018')
     ax2.set_yticks([])
-    ax2.set_xlim([start2,end2])
+    ax2.set_xlim([startfall2,endfall2])
     ax2.set_zorder(1)
-
-
+    ax2.set_xticks([])
+    
+    par22 = ax2.twinx()
+    par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
+    par22.yaxis.tick_left()
+    par22.yaxis.set_label_position('left')
+    par22.spines['left'].set_position(('axes', -0.12))
+    par22.set_ylim([-0.6,0.6])
+    par22.set_yticks([-0.3,0,0.3])
+    par22.set_yticklabels([-0.3,0,0.3],color='grey')
+    par22.set_ylabel('NW Current Speed (m/s)',color='grey')
 
     par21 = ax2.twinx()
-    par21.plot(sbe2.sal,'mediumblue')
-    par21.set_ylim(sal_lims)
+    par21.plot(sbefall2.sal,'mediumblue')
+    par21.set_ylim(sal_lims_fall)
     par21.yaxis.tick_left()
     par21.yaxis.set_label_position('left')
-    par21.set_ylabel('Salinity (psu)',color='mediumblue')
-
+    par21.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    par21.set_yticks([28,30,32])
+    par21.set_yticklabels([28,30,32],color='mediumblue')
 
     par2 = ax2.twinx()
-    par2.plot(sbe2.temp,'darkred')
+    par2.plot(sbefall2.temp,'darkred')
     #par2.set_xlim([start2,end2])
-    par2.set_ylim(temp_lims)
-    par2.set_yticks(temp_ticks)
+    par2.set_ylim(temp_lims_fall)
+    par2.set_yticks(temp_ticks_fall)
     par2.set_yticklabels([])
     par2.set_ylabel('($^{\circ} C$)',color='darkred')
 
     par2.set_zorder(1)
 
     par2.xaxis.set_major_formatter(myFmt);
-    par2.set_xticks(xticks18)
+    par2.set_xticks(xticksfall2)
+    
+    
 
     #-----Fall 2018 TS Diagram-------
-    ax21 = plt.subplot2grid((64,24),(32,17),rowspan=27,colspan=6)
-    chandle = plot_ts_diagram(sbe2.temp,sbe2.sal,temp_lims,sal_lims,ax21)
-    ax21.set_xlabel('Salinity (psu)',color='mediumblue')
-    ax21.set_yticks(temp_ticks)
-    ax21.set_yticklabels(temp_tick_labels,color='darkred')
+    ax21 = plt.subplot2grid((132,24),(32,17),rowspan=27,colspan=6)
+    chandle = plot_ts_diagram(sbefall2.temp,sbefall2.sal,temp_lims_fall,sal_lims_fall,ax21)
+    ax21.set_xlabel('Salinity $(psu)$',color='mediumblue')
+    ax21.set_xticks([28,30,32])
+    ax21.set_xticklabels([28,30,32],color='mediumblue')
+    ax21.set_yticks(temp_ticks_fall)
+    ax21.set_yticklabels(temp_tick_labels_fall,color='darkred')
 
-    cax21 = plt.subplot2grid((50,6),(46,0),rowspan=3,colspan=4)
+    cax21 = plt.subplot2grid((528,6),(236,0),rowspan=14,colspan=4)
     cbar2 = fig.colorbar(chandle, orientation='horizontal',cax=cax21,ticks=[])
     cax21.set_zorder(0)
 
-    fig.suptitle('Temperature vs. Salinity at OBT: Fall',y=0.96,fontsize=22);
+    #------------------------------------------------------------------------------------------------
+    #                                  SPRING
+    #------------------------------------------------------------------------------------------------
+
+    #------Spring 2018 Timeseries-----
+    ax3 = plt.subplot2grid((264,6),(139,0),rowspan=27*2,colspan=4)
+    ax3.plot(sbespring1.sal,'mediumblue')
+    ax3.set_xlim([startspring1,endspring1])
+    ax3.set_ylim(sal_lims_spring)
+    ax3.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    ax3.set_yticks([30,31,32,33])
+    ax3.set_yticklabels([30,31,32,33],color='mediumblue')
+    ax3.set_title('Spring 2018')
+    par3 = ax3.twinx()
+    par3.plot(sbespring1.temp,'darkred')
+    par3.set_ylim(temp_lims_spring)
+    par3.set_yticklabels([])
+    par3.set_yticks(temp_ticks_spring)
+    par3.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    ax3.set_xticks(xticksspring1)
+    ax3.set_xticklabels([''])
+
+    #------spring 2018 TS Diagram-----
+    ax31 = plt.subplot2grid((264,24),(139,17),rowspan=27*2,colspan=6)
+    h2 = plot_ts_diagram(sbespring1.temp,sbespring1.sal,temp_lims_spring,sal_lims_spring,ax31)
+    ax31.set_yticks(temp_ticks_spring)
+    ax31.set_yticklabels(temp_tick_labels_spring,color='darkred')
+    ax31.set_xticks([30,31,32,33])
+    ax31.set_xticklabels([30,31,32,33],color='mediumblue')
+
+    #-----spring 2019 Timeseries------
+    ax4 = plt.subplot2grid((264,6),(203,0),rowspan=27*2,colspan=4,facecolor='none')
+    ax4.set_title('Spring 2019')
+    ax4.set_yticks([])
+    ax4.set_xlim([startspring2,endspring2])
+    ax4.set_zorder(1)
+    ax4.set_xticks([])
+    
+    par22 = ax4.twinx()
+    par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
+    par22.yaxis.tick_left()
+    par22.yaxis.set_label_position('left')
+    par22.spines['left'].set_position(('axes', -0.12))
+    par22.set_ylim([-0.6,0.6])
+    par22.set_yticks([-0.3,0,0.3])
+    par22.set_yticklabels([-0.3,0,0.3],color='grey')
+    par22.set_ylabel('NW Current Speed (m/s)',color='grey')
+
+    par21 = ax4.twinx()
+    par21.plot(sbespring2.sal,'mediumblue')
+    par21.set_ylim(sal_lims_spring)
+    par21.yaxis.tick_left()
+    par21.yaxis.set_label_position('left')
+    par21.set_ylabel('Salinity $(psu)$',color='mediumblue')
+    par21.set_yticks([30,31,32,33])
+    par21.set_yticklabels([30,31,32,33],color='mediumblue')
+
+    par2 = ax4.twinx()
+    par2.plot(sbespring2.temp,'darkred')
+    #par2.set_xlim([start2,end2])
+    par2.set_ylim(temp_lims_spring)
+    par2.set_yticks(temp_ticks_spring)
+    par2.set_yticklabels([])
+    par2.set_ylabel('($^{\circ} C$)',color='darkred')
+
+    par2.set_zorder(1)
+
+    par2.xaxis.set_major_formatter(myFmt);
+    par2.set_xticks(xticksspring2)
+
+    #-----spring 2019 TS Diagram-------
+    ax41 = plt.subplot2grid((264,24),(203,17),rowspan=27*2,colspan=6)
+    chandle = plot_ts_diagram(sbespring2.temp,sbespring2.sal,temp_lims_spring,sal_lims_spring,ax41)
+    ax41.set_xlabel('Salinity $(psu)$',color='mediumblue')
+    ax41.set_yticks(temp_ticks_spring)
+    ax41.set_yticklabels(temp_tick_labels_spring,color='darkred')
+    ax41.set_xticks([30,31,32,33])
+    ax41.set_xticklabels([30,31,32,33],color='mediumblue')
+
+    cax41 = plt.subplot2grid((264,6),(257,0),rowspan=7,colspan=4)
+    cbar2 = fig.colorbar(chandle, orientation='horizontal',cax=cax41,ticks=[])
+    cax41.set_zorder(0)
+
+    #------------Label panels-------------------------
+    label_x = 0.01
+    label_y = 1.03
+    fontsz = 18
+    plt.text(x=label_x,y=label_y,s='(a)',transform=ax1.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(b)',transform=ax2.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(c)',transform=ax3.transAxes,fontsize=fontsz)
+    plt.text(x=label_x,y=label_y,s='(d)',transform=ax4.transAxes,fontsize=fontsz)
 
 #########################################################################################################
 
@@ -871,7 +1010,7 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     h0 = ax1.plot(salt_fall,temp_fall,'C1')
     h1 = ax1.plot(salt_spring,temp_spring,'C2')
     #h2 = ax1.scatter(salt,temp,c=sbe.index,s=1,cmap=cc.cm.rainbow)
-    ax1.set_xlabel('Salinity (psu)')
+    ax1.set_xlabel('Salinity $(psu)$')
     ax1.set_ylabel('Temperature ($^\circ C$)');
 
     #----------Colorbar-----------------------
@@ -882,7 +1021,7 @@ def plot_OBT_fallVspring_TS(sbeOBT, fall_start_18, fall_end_18, spring_start_19,
     h2 = ax1.plot(si,t_freeze,'k',linewidth=1)
     ax1.legend(['Fall (Oct-Dec)','Spring (Apr-Jun)','Freezing Point'],loc='upper left',framealpha=1);
     ax1.set_title('      OBT: Fall vs. Spring in T-S Space',pad=10)
-    
+
     #----------Add Bering Strait climatological salinity ranges-------
     #from Woodgate et al 2005
     fall_minsal = 31.4
@@ -1110,11 +1249,11 @@ def plot_filtered_sal_v_deltaT(rbr, start, end):
     #p13 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
     #p14 = Polygon(xy=np.array([[4,0.275],[4,0.425],[7,0.425]]),color='gray',alpha=0.3,edgecolor=None)
 
-    #ax11.add_patch(p11) 
-    #ax12.add_patch(p12) 
-    #ax13.add_patch(p13) 
-    #ax14.add_patch(p14) 
-    
+    #ax11.add_patch(p11)
+    #ax12.add_patch(p12)
+    #ax13.add_patch(p13)
+    #ax14.add_patch(p14)
+
 #######################################################################################
 
 def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
@@ -1245,13 +1384,13 @@ def currents_vs_TS(rbr,aqdXr,aqd2dir,start,end):
 
     ax11.annotate("Flow direction \ndetermines sign", xy=(-729, 0.41), color='k',fontsize=16,annotation_clip=False)
     ax11.annotate("Flow speed \ndetermines \nmagnitude", xy=(-570, 0.35), color='k',fontsize=16,annotation_clip=False)
-    
+
     plt.text(x=-1.1,y=2.47,s='(a)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=0.65,y=2.47,s='(b)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-1.1,y=1.02,s='(c)',transform=plt.gca().transAxes,fontsize=30)
     plt.text(x=-0.08,y=1.05,s='(d)',transform=plt.gca().transAxes,fontsize=30)
 
-    
+
 #######################################################################################
 
 def plot_ustar(ustar,aqd2dir,StvRe,start,end):
