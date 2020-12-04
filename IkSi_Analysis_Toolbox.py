@@ -151,6 +151,9 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     plt.text(x=label_x,y=label_y,s='(i)',transform=axx[8].transAxes,fontsize=fontsz)
     plt.text(x=label_x,y=label_y,s='(j)',transform=axx[9].transAxes,fontsize=fontsz)
 
+
+    #plt.savefig('Figures/OverviewTimeseries_v5.png',dpi=300,bbox_extra_artists=(cbar_ax1,cbar_ax2), bbox_inches='tight')
+
 #########################################################################################################
 
 def bidir_current_correlations(aqdXr, aqd2dir, tempsXrInterp, rbr):
@@ -442,7 +445,7 @@ def plot_flux_balances(mbs_mean, maximet, cnr_rsmpl, rbr_rsmpl, Fw_92):
     plt.text(x=0,y=1.02,s='(a)',transform=axx[0].transAxes,fontsize=26)
     plt.text(x=0,y=1.02,s='(b)',transform=axx[1].transAxes,fontsize=26)
 
-    plt.savefig('Figures/Flux Balances v4.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
+    #plt.savefig('Figures/Flux Balances v4.png',dpi=300,bbox_extra_artists=(l1,l2), bbox_inches='tight')
     return scale
 
 #########################################################################################################
@@ -814,7 +817,7 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
     ax2.set_xlim([startfall2,endfall2])
     ax2.set_zorder(1)
     ax2.set_xticks([])
-    
+
     par22 = ax2.twinx()
     par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
     par22.yaxis.tick_left()
@@ -846,8 +849,8 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
 
     par2.xaxis.set_major_formatter(myFmt);
     par2.set_xticks(xticksfall2)
-    
-    
+
+
 
     #-----Fall 2018 TS Diagram-------
     ax21 = plt.subplot2grid((132,24),(32,17),rowspan=27,colspan=6)
@@ -900,7 +903,7 @@ def plot_OBT_sections_SpringAndFall(sbeOBT18, sbeOBT, startfall1, endfall1, star
     ax4.set_xlim([startspring2,endspring2])
     ax4.set_zorder(1)
     ax4.set_xticks([])
-    
+
     par22 = ax4.twinx()
     par22.fill_between(mean2DirCurrents.index.values, mean2DirCurrents.rolling(2*24,center=True).mean(),color='darkgrey',alpha=0.8)
     par22.yaxis.tick_left()

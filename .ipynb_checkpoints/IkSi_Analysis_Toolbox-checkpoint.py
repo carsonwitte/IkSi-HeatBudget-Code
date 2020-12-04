@@ -150,6 +150,9 @@ def plot_overview_timeseries(start, end, aqd2dir, mbs_mean, tempsXrInterp, rbr, 
     plt.text(x=label_x,y=label_y,s='(h)',transform=axx[7].transAxes,fontsize=fontsz)
     plt.text(x=label_x,y=label_y,s='(i)',transform=axx[8].transAxes,fontsize=fontsz)
     plt.text(x=label_x,y=label_y,s='(j)',transform=axx[9].transAxes,fontsize=fontsz)
+    
+    
+    #plt.savefig('Figures/OverviewTimeseries_v5.png',dpi=300,bbox_extra_artists=(cbar_ax1,cbar_ax2), bbox_inches='tight')
 
 #########################################################################################################
 
