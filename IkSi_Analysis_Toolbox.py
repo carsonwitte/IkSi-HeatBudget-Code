@@ -294,11 +294,10 @@ def calculate_ustar(aqdXr, roll):
 
 #########################################################################################################
 
-def calculate_Fw(deltaT, ustar, rbr_rsmpl, lon, lat):
+def calculate_Fw(deltaT, ustar, rbr_rsmpl, lon, lat, St=0.0057):
     '''
     Calculate ocean-ice heat flux following McPhee '92
     '''
-    St = 0.0057 #dimensionless Stanton Number
     SA = gsw.SA_from_SP(rbr_rsmpl.Salinity_Adjusted,0,lon,lat)
     cp = gsw.cp_t_exact(SA,rbr_rsmpl.subice_temp,0)
     rho = gsw.rho_t_exact(SA,rbr_rsmpl.subice_temp,0) #in-situ density, NOT density anomaly
