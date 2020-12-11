@@ -136,12 +136,12 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
     axx.set_extent([xmin,xmax,ymin,ymax])
 
     #Add title to map
-    #axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    axx.text(0.5, 0.99, 'April Sea Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add data source to map
-    #axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
+    axx.text(0.01, 0.01, 'AMSR-2 Satellite Data Processed with ASI Algorithm, obtained from Hamburg ICDC', fontsize=25, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=300)
 
     #Add custom legend to map
     #plot legend boxes
@@ -152,7 +152,7 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
             axx.add_patch(patches.Rectangle(xy=(x,y+(idx*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=colorstring, alpha=0.15, transform=axx.transAxes, zorder=300))
             counter = counter + 1
     #label legend
-    axx.text(x, y + h, '% of Prior Years  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=300)
+    axx.text(x, y + h, '% of Prior Years  \n (2000-2018)  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=300)
     axx.text(x + w, y + h, ' 100%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='top', transform=axx.transAxes,zorder=300)
     axx.text(x + w, y + h/2, ' 50%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,zorder=300)
     axx.text(x + w, y - (h/nyears/2), ' 0%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,zorder=300)
@@ -161,9 +161,25 @@ def plot_layered_ice_map(si, si19, startDay, endDay, thresh, transparency, plotf
     axx.add_patch(patches.Rectangle(xy=(x,y+h+(2*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=color2019, alpha=1, transform=axx.transAxes, zorder=300))
     axx.text(x, y + h +(2.4*h/nyears), '2019  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='center', transform=axx.transAxes,zorder=300)
 
-    #label Kotzebue Sound on plot
+    #label Places on plot
     axx.text(0.65, 0.54, 'Kotzebue \n Sound', fontsize=18, transform=axx.transAxes, zorder=300)
     axx.add_patch(patches.Arrow(x=0.69, y=0.58, dx=0.01, dy=0.05, width=0.01, facecolor='k',transform=axx.transAxes,zorder=300))
+
+    axx.text(0.05, 0.75, 'Russia', fontsize=33, transform=axx.transAxes, zorder=300)
+    axx.text(0.8, 0.26, 'Alaska', fontsize=33, transform=axx.transAxes, zorder=300)
+    axx.text(0.35, 0.8, 'Chukchi Sea', fontsize=26, transform=axx.transAxes, zorder=300)
+    axx.text(0.35, 0.27, 'Bering Sea', fontsize=26, transform=axx.transAxes, zorder=300)
+
+    axx.text(0.4, 0.6, 'Bering \nStrait', fontsize=18, transform=axx.transAxes, zorder=300)
+    axx.add_patch(patches.Arrow(x=0.459, y=0.615, dx=0.06, dy=-0.013, width=0.01, facecolor='k',transform=axx.transAxes,zorder=300))
+
+    axx.text(-0.065,0.01, '$60^\circ$N', fontsize=18, transform=axx.transAxes, zorder=300)
+    axx.text(-0.065,0.53, '$65^\circ$N', fontsize=18, transform=axx.transAxes, zorder=300)
+    axx.text(-0.065,0.975, '$70^\circ$N', fontsize=18, transform=axx.transAxes, zorder=300)
+
+    axx.text(0.11,-0.025, '$180^\circ$W', fontsize=18, transform=axx.transAxes, zorder=300)
+    axx.text(0.465,-0.025, '$170^\circ$W', fontsize=18, transform=axx.transAxes, zorder=300)
+    axx.text(0.795,-0.025, '$160^\circ$W', fontsize=18, transform=axx.transAxes, zorder=300)
 
 #########################################################################################################
 
@@ -312,7 +328,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
                     axx.add_patch(patches.Rectangle(xy=(x,y+(idx*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=colorstring, alpha=0.15, transform=axx.transAxes, zorder=400))
                     counter = counter + 1
             #label legend
-            axx.text(x, y + h, '% of Prior Years  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=400)
+            axx.text(x, y + h, '% of Prior Years  \n (2000-2018)  \n Covered By  \n Landfast Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=400)
             axx.text(x + w, y + h, ' 100%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='top', transform=axx.transAxes,zorder=400)
             axx.text(x + w, y + h/2, ' 50%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,zorder=400)
             axx.text(x + w, y - (h/nyears/2), ' 0%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,zorder=400)
@@ -336,11 +352,11 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     #add rivers shapefile
     axx.add_feature(river,zorder=350, edgecolor='#46d3f6', facecolor='#efebd3', alpha=1,linewidth=4)
     #Add title to map
-    #axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
-    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    axx.text(0.5, 0.99, 'Landfast Ice Extent \n Since 2000', fontsize=45, fontname='Calibri', horizontalalignment='center', verticalalignment='top', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add data source to map
-    #axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
-    #         bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
+    axx.text(0.006, 0.01, 'Ice Edges Traced from MODIS Visible Images', fontsize=18, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,
+             bbox=dict(boxstyle='square,pad=0.15', facecolor='w', alpha=0.8),zorder=400)
     #Add custom legend to map
 
     #plot legend boxes
@@ -351,7 +367,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
             axx.add_patch(patches.Rectangle(xy=(x,y+(idx*h/nyears)), width=w, height=h/nyears, edgecolor='k', facecolor=colorstring, alpha=0.15, transform=axx.transAxes, zorder=400))
             counter = counter + 1
     #label legend
-    axx.text(x, y + h, '% of Prior Years  \n Covered By Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=400)
+    axx.text(x, y + h, '% of Prior Years  \n (2000-2018)  \n Covered By  \n Landfast Ice  ', fontsize=20, fontname='Calibri', horizontalalignment='right', verticalalignment='top', transform=axx.transAxes,zorder=400)
     axx.text(x + w, y + h, ' 100%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='top', transform=axx.transAxes,zorder=400)
     axx.text(x + w, y + h/2, ' 50%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='center', transform=axx.transAxes,zorder=400)
     axx.text(x + w, y - (h/nyears/2), ' 0%', fontsize=20, fontname='Calibri', horizontalalignment='left', verticalalignment='bottom', transform=axx.transAxes,zorder=400)
@@ -363,6 +379,24 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     axx.text(0.46, 0.75, 'Noatak \n River', fontsize=18, transform=axx.transAxes, zorder=400)
     axx.text(0.538, 0.545, 'Kotzebue', fontsize=13, transform=axx.transAxes, zorder=400)
     axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.018, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
+
+    axx.text(0.345, 0.127, '2006', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.354, 0.153, '2018', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.363, 0.19, '2011', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.375, 0.23, '2009', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.4, 0.285, '2004', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.44, 0.43, '2014', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.355, 0.47, '2017', fontsize=14, transform=axx.transAxes, zorder=400)
+
+    axx.text(-0.065, 0.01, '$66.0^\circ$N', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(-0.065, 0.34, '$66.5^\circ$N', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(-0.065, 0.67, '$67.0^\circ$N', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(-0.065, 0.97, '$67.5^\circ$N', fontsize=14, transform=axx.transAxes, zorder=400)
+
+    axx.text(0.06,-0.025, '$165^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.43,-0.025, '$163^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
+    axx.text(0.8,-0.025, '$161^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
+
 
 #########################################################################################################
 
