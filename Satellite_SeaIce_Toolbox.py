@@ -17,6 +17,8 @@ import glob
 from matplotlib import pyplot as plt
 import matplotlib.patches as patches
 from matplotlib.patches import ConnectionPatch
+import colorcet as cc
+
 
 def subset_ssmi(ssmi, lat_min, lat_max, lon_min, lon_max, xmin, xmax, ymin, ymax):
     '''
@@ -214,7 +216,8 @@ def plot_monthly_anomalies(si, sst):
 
     #initialize figure and set color cycle of axes based on how many years we're plotting
     fig, axx = plt.subplots(nrows=2,ncols=1,figsize=(16,10),facecolor='w')
-    cm = plt.get_cmap('gist_rainbow')
+    #cm = plt.get_cmap('gist_rainbow')
+    cm = cc.cm['rainbow']
     axx[0].set_prop_cycle('color',[cm(1.*i/num_yrs) for i in range(num_yrs)])
     axx[1].set_prop_cycle('color',[cm(1.*i/num_yrs) for i in range(num_yrs)])
 
@@ -266,7 +269,7 @@ def plot_monthly_anomalies(si, sst):
 
 #########################################################################################################
 
-def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, transparency, xmin, xmax, ymin, ymax, plotflag):
+def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, kotz_path, transparency, xmin, xmax, ymin, ymax, plotflag):
     '''
     This function imports shapefiles of landfast ice extent and plots them in a transparent stack with 2019 in red, along with coastline and river shapefiles and some labels and legends.
 
@@ -288,6 +291,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     #read in shapefiles
     coastline = ShapelyFeature(Reader(coastline_path).geometries(),ccrs.PlateCarree())
     river = ShapelyFeature(Reader(river_path).geometries(),ccrs.PlateCarree())
+    kotz = ShapelyFeature(Reader(kotz_path).geometries(),ccrs.PlateCarree())
 
     shape_list = []
     files = glob.glob(data_folder + '\*.shp')
@@ -339,7 +343,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
             axx.text(0.7, 0.475, 'Kobuk \n River', fontsize=18, transform=axx.transAxes, zorder=400)
             axx.text(0.46, 0.75, 'Noatak \n River', fontsize=18, transform=axx.transAxes, zorder=400)
             axx.text(0.538, 0.545, 'Kotzebue', fontsize=13, transform=axx.transAxes, zorder=400)
-            axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.018, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
+            axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.016, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
 
             plt.savefig(f'Figures/Layered Landfast Ice Maps/LandfastIce_to_{yr}.png',dpi=300,facecolor='k')
 
@@ -378,7 +382,7 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     axx.text(0.7, 0.475, 'Kobuk \n River', fontsize=18, transform=axx.transAxes, zorder=400)
     axx.text(0.46, 0.75, 'Noatak \n River', fontsize=18, transform=axx.transAxes, zorder=400)
     axx.text(0.538, 0.545, 'Kotzebue', fontsize=13, transform=axx.transAxes, zorder=400)
-    axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.018, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
+    axx.add_patch(patches.Arrow(x=0.55, y=0.56, dx=-0.016, dy=0.03, width=0.01, facecolor='k',transform=axx.transAxes,zorder=400));
 
     axx.text(0.345, 0.127, '2006', fontsize=14, transform=axx.transAxes, zorder=400)
     axx.text(0.354, 0.153, '2018', fontsize=14, transform=axx.transAxes, zorder=400)
@@ -396,6 +400,21 @@ def plot_layered_landfast_ice_map(data_folder, coastline_path, river_path, trans
     axx.text(0.06,-0.025, '$165^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
     axx.text(0.43,-0.025, '$163^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
     axx.text(0.8,-0.025, '$161^\circ$W', fontsize=14, transform=axx.transAxes, zorder=400)
+
+    #plot urban Kotzebue
+    axx.add_feature(kotz,zorder=300, edgecolor='k', facecolor='gray', alpha=1)
+
+    #plot circles for locations of ITO and OBT
+    from matplotlib.patches import Ellipse
+    ITO_xy = (-162.6170,66.8969)
+    OBT_xy = (-163.7957,67.0598)
+    wd = 0.05
+
+    axx.add_patch(Ellipse(xy=ITO_xy,width=wd,height=wd/2.5,transform=ccrs.PlateCarree(),zorder=500,facecolor='w',edgecolor='k'))
+    axx.text(0.498, 0.598, 'ITO', fontsize=13, transform=axx.transAxes, zorder=400)
+
+    axx.add_patch(Ellipse(xy=OBT_xy,width=wd,height=wd/2.5,transform=ccrs.PlateCarree(),zorder=500,color='k'))
+    axx.text(0.278, 0.7, 'OBT', fontsize=13, transform=axx.transAxes, zorder=400)
 
 
 #########################################################################################################
